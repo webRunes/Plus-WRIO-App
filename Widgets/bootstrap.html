@@ -1,0 +1,28 @@
+<link rel="import" href="http://wrio.s3-website-us-east-1.amazonaws.com/jquery.html">
+<template>
+    <div class="container-liquid">
+        <div class="row row-offcanvas row-offcanvas-right">
+            <div class="col-xs-12 col-sm-3 col-md-2">
+                <div class="navbar navbar-inverse main navbar-fixed-top row-offcanvas-menu">
+                    <div class="navbar-header">
+                        <ul class="nav menu pull-right">
+                            <li><a href="#" class="btn btn btn-link btn-sm"><span class="glyphicon glyphicon-envelope"></span></a></li>
+                            <li><a href="#" class="btn btn btn-link btn-sm"><span class="glyphicon glyphicon-lock"></span></a></li>
+                            <li><a href="#" class="btn btn btn-link btn-sm"><span class="glyphicon glyphicon-fullscreen"></span></a></li>
+                            <li><a href="#" class="btn btn btn-link btn-sm visible-xs" data-toggle="collapse" data-target=".navbar-collapse"><span class="glyphicon glyphicon-align-justify"></span></a></li>
+                            <li><a href="#" class="btn btn btn-link btn-sm visible-xs" data-toggle="offcanvas"><span class="glyphicon glyphicon-transfer"></span></a></li>
+                        </ul>
+                        <a href="#" class="navbar-brand">&nbsp;</a>
+                    </div>
+                    <nav class="navbar-collapse in">
+                        <webrunes-article-list-widget></webrunes-article-list-widget>
+                    </nav>
+                </div>
+            </div>
+            <div class="content col-xs-12 col-sm-5 col-md-7">
+                <div class="margin"><webrunes-article-widget></webrunes-article-widget></div>
+            </div>
+            <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">righT</div>
+        </div>
+    </div>
+</template>

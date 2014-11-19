@@ -1,0 +1,31 @@
+<link rel="import" href="http://wrio.s3-website-us-east-1.amazonaws.com/jquery.html">
+<link rel="import" href="http://wrio.s3-website-us-east-1.amazonaws.com/handlebars.html">
+
+<script>
+    (function($){
+        var source  = '<br/><div>{{#each paragraph}}<p>{{p}}</p>{{/each}}</div>'+
+                '<div>{{article.author.givenName}}</div><div>{{article.author.familyName}}</div><br/>';
+
+        var proto = Object.create(HTMLElement.prototype);
+        proto.createdCallback = function() {
+            data = this.getListWidgetTemplate();
+            if(data){
+                var template = Handlebars.compile(source);
+                var html = template(data);
+                this.innerHTML = html;
+            }
+        };
+
+        proto.getListWidgetTemplate = function(){
+            var templ = $('script[type="application/ld+json"]').html();
+            var article = JSON.parse(templ);
+            article.paragraph = [];
+            for(var i= 0,len=article.article.articleBody.length;i<len;i++){
+                article.paragraph.push({'p':article.article.articleBody[i]})
+            }
+            return article;
+        };
+
+        document.registerElement('webrunes-article-widget', {prototype: proto});
+    })(jQuery);
+</script>
