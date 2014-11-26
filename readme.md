@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/webRunes/Plus-WRIO-App.svg?branch=master)](https://travis-ci.org/webRunes/Plus-WRIO-App)
+
 #Plus <sup>[WRIO](https://wr.io) App</sup>
 (coming soon)
 
