@@ -26,7 +26,7 @@
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function() {
             var self = this;
-            var urlList = this.getAttribute('url') || 'http://fope.github.io/1WJyH1k7-list.html';
+            var urlList = this.getAttribute('url') || 'http://fope.github.io/webRunes-WRIO-Hub/1WJyH1k7-list.html';
             this.getArticleListJsonLd(urlList, function(model){
                 if(model && model.language){
                     $.each(model.language, function(ind, item){
