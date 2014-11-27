@@ -1,0 +1,76 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+<template id="article-template">
+    <div itemprop="mainContentOfPage">
+        <article itemscope itemtype="http://schema.org/Article">
+            <header class="col-xs-12">
+                <h1><span itemprop="name" id="article-title"></span></h1>
+                <p itemprop="url" id="article-url"></p>
+                <p itemprop="isBasedOnUrl">domainname.com/url</p> <!-- если использовались какие-то источники при создании -->
+                <p itemprop="keywords">tag1, tag2, tag3</p>
+                <meta itemprop="inLanguage" content="en-US">
+                <meta itemprop="datePublished" content="2014-05-08T19:30">
+                <meta itemprop="dateModified" content="2014-07-17T9:55">
+                <meta itemprop="timeRequired" content="P4M" />
+                <meta itemprop="interactionCount" content="UserPageVisits:1634" />
+                <meta itemprop="thumbnailUrl" content="http://domain.com/image200x200.jpg" />
+            </header>
+            <div class="paragraph" itemprop="description">
+                <div class="col-xs-12 col-md-6">
+                    <p>
+                        Disclaimer: We start a series of stories describing various issues and problems
+                        that are related for the most part to the Internet, and our vision of possible ways
+                        to solve them. Those will often be followed by previews of projects mentioned in
+                        the stories. Keep in mind: some of them might change, some will remain just our
+                        fantasy; at this moment we are a small team, but with a great desire to change this
+                        world for the better or at least a little bit.
+                    </p>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <span class="glyphicon glyphicon-comment" data-toggle="tooltip" data-placement="right" title="Not yet available"></span>
+                </div>
+            </div>
+            <div itemprop="articleBody" id="article-body"></div>
+        </article>
+    </div>
+</template>
+
+<script>
+    (function($){
+        var importDoc = document.currentScript.ownerDocument;
+
+        var template = importDoc.querySelector('#article-template');
+        var $template = $(template.innerHTML);
+        var $title = $($template).find('#article-title').get(0);
+        var $articleUrl = $($template).find('#article-url').get(0);
+        var $articleBody = $($template).find('#article-body').get(0);
+
+        var proto = Object.create(HTMLElement.prototype);
+        proto.createdCallback = function() {
+            var article = this.getArticleJsonLd();
+            $($title).html('where is title?');
+            $($articleUrl).html(article.article.author.sameAs);
+            for(var i= 0,len=article.paragraphs.length;i<len;i++){
+                var $paragraph = $('<div class="paragraph"></div>');
+                var $box = $('<div class="col-xs-12 col-md-6"></div>');
+                $($paragraph).append($box);
+                var $p = $('<p></p>').html(article.paragraphs[i].p);
+                $($box).append($p);
+                $($articleBody).append($paragraph);
+            }
+
+            this.innerHTML = $template.get(0).outerHTML;
+        };
+        proto.getArticleJsonLd = function(){
+            var templ = $('script[type="application/ld+json"]').html();
+            var article = JSON.parse(templ);
+            article.paragraphs = [];
+            for(var i= 0,len=article.article.articleBody.length;i<len;i++){
+                article.paragraphs.push({'p':article.article.articleBody[i]});
+            }
+            return article;
+        };
+        document.registerElement('article-widget', {prototype: proto});
+    })(jQuery);
+</script>
