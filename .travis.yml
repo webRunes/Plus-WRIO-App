@@ -1,3 +1,5 @@
+script: /bin/date
+
 deploy:
   provider: s3
   access_key_id: secure: "JhjnySnx9vQMPLCKMPE4rlLRWSAeYW1OeEzR/UdMjIuJT6woJ1AquFVulhi9KFOgMN8/yo58K9cbnnSjYMEnhmWn0pnKPaj/sbwQfRH7ln4gN/U74CBnTorLFBgH09Qnh4KWbYo6xzW/RKFnkhrSdR8pLiMc0d4r30XcoHJZs="
