@@ -29,6 +29,9 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+# Web Storm, other java IDE's
+.idea
+
 *_i.c
 *_p.c
 *_i.h
