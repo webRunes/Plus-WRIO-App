@@ -45,7 +45,6 @@ passport.use(new GooglePlusStrategy({
 ));
 
 app.get('/', function (request, response) {
-	console.log(request.user);
 	response.render('index', {user: request.user});
 });
 
