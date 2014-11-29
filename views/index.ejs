@@ -1,0 +1,17 @@
+<html>
+<head>
+	<title>Google Login</title>
+</head>
+<body>
+<div id="result"></div>
+<% if (!user) { %>
+<a id="signinButton" href="/auth/google">
+	Google Login
+</a>
+<% } else { %>
+<h2>Hello, <%= user.displayName %>.</h2>
+<% } %>
+</body>
+<script>
+</script>
+</html>

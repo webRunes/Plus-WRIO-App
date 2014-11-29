@@ -1,6 +1,12 @@
-language: javascript
+language: node_js
 
 script: "/bin/date"
+
+node_js:
+  - 0.10
+
+install : npm install
+script  : npm start
 
 deploy:
   provider: s3
