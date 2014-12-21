@@ -2,50 +2,49 @@
 
 
 <template id="plus-template">
-    <ul class="nav navbar-nav" id="nav-accordion">
-        <li class="panel"><a href="#element3" class="collapsed" data-parent="#nav-accordion"
-                             data-toggle="collapse"><span class="qty btn btn-xs pull-right">324</span>Blogs</a>
-
-            <div class="" id="element3">
-                <ul class="nav nav-pills nav-stacked sub" id="plus-template-ul"></ul>
-            </div>
-        </li>
-        <li class="new panel active"><a href="#element4" data-parent="#nav-accordion" data-toggle="collapse"><span
-                class="glyphicon glyphicon-plus"></span></a>
-
-            <div class="collapse" id="element4"></div>
-        </li>
-    </ul>
+    <ul class="nav navbar-nav" id="nav-accordion"></ul>
+</template>
+<template id="plus-plus-template">
+    <li class="new panel active"><a href="#element4" data-parent="#nav-accordion" data-toggle="collapse">
+        <span class="glyphicon glyphicon-plus"></span></a>
+        <div class="collapse" id="element4"></div>
+    </li>
 </template>
 
 <script>
     (function ($) {
+        var webrunes = window.webrunes || {};
         var href = window.location.href;
         var importDoc = document.currentScript.ownerDocument;
 
         var template = importDoc.querySelector('#plus-template');
         var $template = $(template.innerHTML);
-        var $ul = $($template).find('#plus-template-ul').get(0);
+        var plus = importDoc.querySelector('#plus-plus-template');
+        var $plus = $(plus.innerHTML);
 
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function () {
             var self = this;
-            var urlList = this.getAttribute('url') || 'http://fope.github.io/webRunes-WRIO-Hub/1WJyH1k7-list.html';
-            this.getArticleListJsonLd(urlList, function (model) {
-                if (model && model.language) {
-                    $.each(model.language, function (ind, item) {
-                        var $li = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove btn btn-xs"></span></a></li>');
-                        var $a = $('<a href="' + item.url + '" class="pull-right"></a>').html(item.name);
-                        $($li).append($a);
-                        $($ul).append($li);
-                        if (item.url == href) {
-                            $($li).addClass('active');
-                        }
-                    });
+            var url = webrunes.plusUrl;
+            if(url){
+                this.getArticleListJsonLd(url, function (model) {
+                    if (model && model.language) {
+                        $.each(model.language, function (ind, item) {
+                            var $li = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove btn btn-xs pull-right"></span></a></li>');
+                            var $a = $('<a href="' + item.url + '"></a>').html(item.name);
+                            $($li).append($a);
+                            $($template).append($li);
+                            if (item.url == href) {
+                                $($li).addClass('active');
+                            }
+                        });
 
-                    self.innerHTML = $template.get(0).outerHTML;
-                }
-            });
+                        $($template).append($($plus));
+                        self.innerHTML = $template.get(0).outerHTML;
+                    }
+                });
+            }
+
         };
         proto.getArticleListJsonLd = function (urlList, callback) {
             $.get(urlList).success(function (response) {
@@ -54,6 +53,7 @@
                 var doc = $frame.get(0).contentWindow.document;
                 doc.write(response);
                 var json = $(doc).find('script[type="application/ld+json"]').html();
+                $($frame).remove();
 
                 if (json) json = JSON.parse(json);
                 if (callback) callback(json);

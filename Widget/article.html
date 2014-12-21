@@ -1,36 +1,13 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <template id="article-template">
-    <main itemprop="mainContentOfPage" itemscope itemtype="http://schema.org/ProfilePage">
-        <meta itemprop="inLanguage" content="en-US">
-        <meta itemprop="datePublished" content="2014-05-08T19:30">
-        <meta itemprop="dateModified" content="2014-07-17T9:55">
-        <meta itemprop="interactionCount" content="UserPageVisits:1634" />
-        <article itemscope itemtype="http://schema.org/Person" id="begin">
-            <header class="col-xs-12">
-                <h1><span itemprop="name"><span itemprop="givenName">Alexey</span> <span itemprop="familyName">Anshakov</span></span></h1>
-                <p><span itemprop="worksFor">webRunes?</span>, <span itemprop="jobTitle">Founder?</span></p>
-                <p><span itemprop="memberOf">Hub name?</span></p>
-                <p><span itemprop="makesOffer"><a href="#">Web development?</a>, <a href="#">Web design?</a></span></p>
-            </header>
-            <div class="paragraph">
-                <div class="col-xs-12 col-md-6">
-                    <figure>
-                        <img itemprop="image" src="#">
-                        <figcaption class="callout figure-details">
-                            <h5>Info</h5>
-                            <p>Здесь может идти описание картинки, ссылка откуда взята, автор и пр. информация</p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-xs-12 col-md-6">
-                    <span class="glyphicon glyphicon-comment" data-toggle="tooltip" data-placement="right" title="Not yet available"></span>
-                </div>
-            </div>
-
-
-        </article>
-    </main>
+    <article itemscope itemtype="http://schema.org/Article">
+        <header class="col-xs-12">
+            <h1><span itemprop="name"></span></h1>
+            <meta itemprop="datePublished" content="2014-05-08T19:30">
+            <meta itemprop="dateModified" content="2014-07-17T9:55">
+        </header>
+    </article>
 </template>
 <template id="paragraph-template">
     <div class="paragraph">
@@ -44,55 +21,31 @@
         </div>
     </div>
 </template>
-<template id="section-template">
-    <section>
-        <header class="col-xs-12"><h2></h2></header>
-    </section>
-</template>
 
 <script>
     (function ($) {
         var importDoc = document.currentScript.ownerDocument;
-
         var template = importDoc.querySelector('#article-template');
         var $template = $(template.innerHTML);
-        var section = importDoc.querySelector('#section-template');
-        var $section = $(section.innerHTML);
         var paragraph = importDoc.querySelector('#paragraph-template');
         var $paragraph = $(paragraph.innerHTML);
-        var $article = $($template).find('article').get(0);
 
 
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function () {
             var model = window.webrunes.jsonlds[1];
-            for (var i = 0, len = model.hasPart.length; i < len; i++) {
-                this.createSection($article, model.hasPart[i]);
-            }
-
+            var $h1 = $($template).find('H1').get(0);
+            $($h1).html(model.name);
+            this.createParagraphs(model);
             this.innerHTML = $template.get(0).outerHTML;
         };
-        proto.createSection = function($el, model){
-            var $sect = $($section).clone();
-            $($el).append($sect);
-            var $h2 = $($sect).find('H2').get(0);
-            $($h2).attr('id', model.name);
-            $($h2).html(model.name);
-
-            if(model.articleBody){
-                for(var i = 0; i < model.articleBody.length; i++){
-                    var $paragr = $($paragraph).clone();
-                    var $p = $($paragr).find('P').get(0);
-                    $($p).html(model.articleBody[i]);
-                    $($sect).append($paragr);
-                }
-            }else if(model.url){
+        proto.createParagraphs = function(model){
+            for(var i = 0; i < model.articleBody.length; i++){
                 var $paragr = $($paragraph).clone();
                 var $p = $($paragr).find('P').get(0);
-                $($p).html(model.url);
-                $($sect).append($paragr);
+                $($p).html(model.articleBody[i]);
+                $($template).append($paragr);
             }
-
         };
         document.registerElement('article-widget', {prototype: proto});
     })(jQuery);
