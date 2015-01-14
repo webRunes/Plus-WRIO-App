@@ -47,7 +47,7 @@
                     this.createParagraphs($section, model.hasPart[i]);
                 }
             }
-            this.innerHTML = $template.get(0).outerHTML;
+            this.outerHTML = $template.get(0).outerHTML;
         };
         proto.createParagraphs = function(el, model){
             if(model.articleBody){
