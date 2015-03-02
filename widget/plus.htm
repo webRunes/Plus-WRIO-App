@@ -10,86 +10,124 @@
 <script>
     (function ($) {
         var webrunes = window.webrunes || {};
-        var href = window.location.origin + window.location.pathname;
+
+        // incoming data (jsonLd)
+        //var model = webrunes.jsonlds['ItemList'];
+        var model =     {
+            "@context": "http://schema.org",
+            "@type": ["ItemList", "CreativeWork"],
+            "name": "My Plus List",
+            "itemListElement": [
+                {
+                    "@type": "Article",
+                    "inLanguage": "en-US",
+                    "author": "http://webrunes.github.io/webRunes-WRIO-Hub/Alexey-Anshakov.html",
+                    "name": "The story of the cat",
+                    "about": "Description text",
+                    "image": "http://domain1.com/image1.jpg",
+                    "url": "http://wall2003.github.io/webRunes-WRIO-Hub/The-story-of-the-cat.html"
+                },
+                {
+                    "@type": "Article",
+                    "inLanguage": "en-US",
+                    "name": "Alexey Anshakov",
+                    "about": "Description text",
+                    "image": "http://domain.com/image.jpg",
+                    "url": "http://wall2003.github.io/webRunes-WRIO-Hub/article.htm"
+                },
+                {
+                    "@type": "Article",
+                    "inLanguage": "en-US",
+                    "name": "Abother hub",
+                    "about": "Description text",
+                    "image": "http://domain-another-hub.com/image.jpg",
+                    "url": "http://domain.com/article.htm"
+                },
+                {
+                    "@type": "Article",
+                    "inLanguage": "en-US",
+                    "author": "http://webrunes.github.io/webRunes-WRIO-Hub/Alexey-Anshakov.html",
+                    "name": "Help post",
+                    "about": "Description text",
+                    "image": "http://domain2.com/image2.jpg",
+                    "url": "http://domai.com/article2.htm"
+                },
+                {
+                    "@type": "Article",
+                    "inLanguage": "en-US",
+                    "author": "http://domain-another-hub.com/url-another-hub.html",
+                    "name": "Article",
+                    "about": "Description text",
+                    "image": "http://domain3.com/image3.jpg",
+                    "url": "http://domain.com/article3.htm"
+                }
+            ]
+        };
+
         var importDoc = document.currentScript.ownerDocument;
 
-        var $template = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
-        var plus = importDoc.querySelector('#plus-plus-template');
-        var $plus = $(plus.innerHTML);
+        // pulse tab-menu wrapper
+        var $accordion = $(importDoc.querySelector('#plus-accordion-template').innerHTML);
 
-        var proto = Object.create(HTMLElement.prototype);
-        proto.createdCallback = function () {
-            var self = this;
-            var url = webrunes.plusUrl;
-            if(url){
-                this.getModel(url, function (model) {
-                    for(var i = 0; i < model.length; i++){
-                        var collapseCss = model[i].url == href ? '' : 'collapsed';
-                        var activeCss = model[i].url == href ? 'active' : '';
-                        var $box = $('<li class="panel"></li>');
-                        $($box).addClass(activeCss);
-                        var $title = $('<a href="#" data-parent="#nav-accordion" data-toggle="collapse"></a>').html(model[i].name);
-                        $($title).attr('href', '#element' + (i + 1));
-                        $($title).addClass(collapseCss);
-                        $($box).append($title);
+        // sign '+' markup
+        var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
 
-                        if(model[i].items.length > 0){
-                            var $div = $('<div></div>');
-                            $($div).attr('id', 'element' + (i + 1))
-                            $($box).append($div);
-                            var $ul = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
-                            $($div).append($ul);
-                            $($div).addClass(model[i].url == href ? 'in' : 'collapse');
+        // browser address url
+        var href = window.location.origin + window.location.pathname;
 
-                            if (model[i].url == href) {
-                                $($div).addClass('active');
-                            }
+        var plusWidget = Object.create(HTMLElement.prototype);
 
-                            for(var j = 0; j < model[i].items.length; j++){
-                                var $li = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
-                                var $item = $('<a href="#"></a>').html(model[i].items[j].name);
-                                $($item).attr('href', model[i].items[j].url);
-                                $($ul).append($li);
-                                $($li).append($item);
-                            }
-                        }
-                        $($template).append($box);
+        // call after custom-tag rendered
+        plusWidget.createdCallback = function () {
+            plusWidget.drawPulseTabs();
+        };
+        plusWidget.drawPulseTabs = function(){
+            var groupedModel = plusWidget.groupByAthour(model);
+
+            // draw pulse Tabs
+            for(var i = 0; i < groupedModel.length; i++){
+                // check if Tab's url same with browser's, if yes - make active
+                var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
+                var activeCss = groupedModel[i].url == href ? 'active' : '';
+
+                var $parentTab = $('<li/>', { class: 'panel ' + activeCss});
+                var $parentTabTitle = $('<a href="#" data-parent="#nav-accordion" data-toggle="collapse"></a>',{ href: '#element' + (i + 1), class: collapseCss })
+                        .html(groupedModel[i].name);
+
+                $parentTab.append($parentTabTitle);
+
+                if(groupedModel[i].items.length > 0){
+                    var $childTabsWrapper = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
+
+                    // draw children tab below main authorTab
+                    for(var j = 0; j < groupedModel[i].items.length; j++){
+                        var $childTab = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
+                        var $childTabTitle = $('<a href="#"></a>', { href: model[i].items[j].url}).html(model[i].items[j].name);
+
+                        $childTab.append($childTabTitle);
+                        $childTabsWrapper.append($childTab);
                     }
 
-                        $($template).append($($plus));
-                        self.outerHTML = $template.get(0).outerHTML;
-                });
+                    var $div = $('<div/>', { id: 'element' + (i + 1), class: groupedModel[i].url == href ? 'active' : 'collapse'})
+                            .append($childTabsWrapper);
+                    $parentTab.append($div);
+                }
+                $accordion.append($parentTab);
             }
 
+            $accordion.append($($plus));
+            this.outerHTML = $($accordion).get(0).outerHTML;
         };
-        proto.getModel = function (urlList, callback) {
-            var self = this;
-            $.get(urlList).success(function (response) {
-                var $frame = $('<iframe id = "12345" style="display: none;"></iframe>');
-                $('body').append($frame);
-                var doc = $frame.get(0).contentWindow.document;
-                doc.write(response);
-                var jsons = $(doc).find('script[type="application/ld+json"]');
-                var json = $(jsons[1]).html();
-                $($frame).remove();
-
-                if (json) json = JSON.parse(json);
-                var models = self.createModel(json);
-                if (callback) callback(models);
-            }).error(function () {
-                if (callback) callback([]);
-            });
-        };
-        proto.createModel = function(json){
-            if(!json) return [];
+        plusWidget.groupByAthour = function(loModel){
+            if(!loModel) return [];
             var models = [];
-            for(var i = 0; i < json.itemListElement.length; i++){
-                if(!json.itemListElement[i].author){
-                    var blogUrl = json.itemListElement[i].url;
-                    var item = {name: json.itemListElement[i].name, url: json.itemListElement[i].url, items: []};
-                    for(var j = 0; j < json.itemListElement.length; j++){
-                        if(json.itemListElement[j].author && json.itemListElement[j].author == blogUrl){
-                            var elem = {name: json.itemListElement[j].name, url: json.itemListElement[j].url};
+            for(var i = 0; i < loModel.itemListElement.length; i++){
+                if(!loModel.itemListElement[i].author){
+                    var blogUrl = loModel.itemListElement[i].url;
+                    var item = {name: loModel.itemListElement[i].name, url: loModel.itemListElement[i].url, items: []};
+                    for(var j = 0; j < loModel.itemListElement.length; j++){
+                        if(loModel.itemListElement[j].author && loModel.itemListElement[j].author == blogUrl){
+                            var elem = {name: loModel.itemListElement[j].name, url: loModel.itemListElement[j].url};
                             item.items.push(elem);
                         }
                     }
@@ -98,6 +136,6 @@
             }
             return models;
         };
-        document.registerElement('plus-widget', {prototype: proto});
+        document.registerElement('plus-widget', { prototype: plusWidget });
     })(jQuery);
 </script>
