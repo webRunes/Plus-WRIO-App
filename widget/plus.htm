@@ -12,130 +12,101 @@
         var webrunes = window.webrunes || {};
 
         // incoming data (jsonLd)
-        //var model = webrunes.jsonlds['ItemList'];
-        var model =     {
-            "@context": "http://schema.org",
-            "@type": ["ItemList", "CreativeWork"],
-            "name": "My Plus List",
-            "itemListElement": [
-                {
-                    "@type": "Article",
-                    "inLanguage": "en-US",
-                    "author": "http://webrunes.github.io/webRunes-WRIO-Hub/Alexey-Anshakov.html",
-                    "name": "The story of the cat",
-                    "about": "Description text",
-                    "image": "http://domain1.com/image1.jpg",
-                    "url": "http://wall2003.github.io/webRunes-WRIO-Hub/The-story-of-the-cat.html"
-                },
-                {
-                    "@type": "Article",
-                    "inLanguage": "en-US",
-                    "name": "Alexey Anshakov",
-                    "about": "Description text",
-                    "image": "http://domain.com/image.jpg",
-                    "url": "http://wall2003.github.io/webRunes-WRIO-Hub/article.htm"
-                },
-                {
-                    "@type": "Article",
-                    "inLanguage": "en-US",
-                    "name": "Abother hub",
-                    "about": "Description text",
-                    "image": "http://domain-another-hub.com/image.jpg",
-                    "url": "http://domain.com/article.htm"
-                },
-                {
-                    "@type": "Article",
-                    "inLanguage": "en-US",
-                    "author": "http://webrunes.github.io/webRunes-WRIO-Hub/Alexey-Anshakov.html",
-                    "name": "Help post",
-                    "about": "Description text",
-                    "image": "http://domain2.com/image2.jpg",
-                    "url": "http://domai.com/article2.htm"
-                },
-                {
-                    "@type": "Article",
-                    "inLanguage": "en-US",
-                    "author": "http://domain-another-hub.com/url-another-hub.html",
-                    "name": "Article",
-                    "about": "Description text",
-                    "image": "http://domain3.com/image3.jpg",
-                    "url": "http://domain.com/article3.htm"
-                }
-            ]
-        };
-
+        var loModel = webrunes.jsonlds['ItemList'];
         var importDoc = document.currentScript.ownerDocument;
 
         // pulse tab-menu wrapper
-        var $accordion = $(importDoc.querySelector('#plus-accordion-template').innerHTML);
-
+        var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
         // sign '+' markup
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-
         // browser address url
         var href = window.location.origin + window.location.pathname;
 
         var plusWidget = Object.create(HTMLElement.prototype);
 
-        // call after custom-tag rendered
+        // draw Pulse tabs on callback
         plusWidget.createdCallback = function () {
-            plusWidget.drawPulseTabs();
-        };
-        plusWidget.drawPulseTabs = function(){
-            var groupedModel = plusWidget.groupByAthour(model);
-
+            var groupedModel = plusWidget.groupByAthour(loModel);
             // draw pulse Tabs
             for(var i = 0; i < groupedModel.length; i++){
                 // check if Tab's url same with browser's, if yes - make active
                 var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
                 var activeCss = groupedModel[i].url == href ? 'active' : '';
-
                 var $parentTab = $('<li/>', { class: 'panel ' + activeCss});
-                var $parentTabTitle = $('<a href="#" data-parent="#nav-accordion" data-toggle="collapse"></a>',{ href: '#element' + (i + 1), class: collapseCss })
+                var $parentTabTitle = $('<a data-parent="#nav-accordion" data-toggle="collapse"></a>',{ class: collapseCss }).attr('href', '#element' + (i + 1))
                         .html(groupedModel[i].name);
 
                 $parentTab.append($parentTabTitle);
 
-                if(groupedModel[i].items.length > 0){
+                // draw children tab below main authorTab
+                if(groupedModel[i].childTabs.length > 0){
                     var $childTabsWrapper = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
 
-                    // draw children tab below main authorTab
-                    for(var j = 0; j < groupedModel[i].items.length; j++){
+                    for(var j = 0; j < groupedModel[i].childTabs.length; j++){
                         var $childTab = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
-                        var $childTabTitle = $('<a href="#"></a>', { href: model[i].items[j].url}).html(model[i].items[j].name);
-
+                        var $childTabTitle = $('<a href="#"></a>').attr('href', groupedModel[i].childTabs[j].url).html(groupedModel[i].childTabs[j].name);
                         $childTab.append($childTabTitle);
                         $childTabsWrapper.append($childTab);
                     }
-
-                    var $div = $('<div/>', { id: 'element' + (i + 1), class: groupedModel[i].url == href ? 'active' : 'collapse'})
-                            .append($childTabsWrapper);
+                    var $div = $('<div/>', { id: 'element' + (i + 1), class: groupedModel[i].url == href ? 'active' : 'collapse'}).append($childTabsWrapper);
                     $parentTab.append($div);
                 }
                 $accordion.append($parentTab);
             }
-
             $accordion.append($($plus));
-            this.outerHTML = $($accordion).get(0).outerHTML;
+            this.outerHTML = $accordion.get(0).outerHTML;
         };
         plusWidget.groupByAthour = function(loModel){
             if(!loModel) return [];
+            var parentTabs = plusWidget.getParentTabs(loModel);
+            var childTabs = plusWidget.getChildTabs(loModel);
+            var notInsertedChildren = [];
+
+            // crate relationship parent - children
+            childTabs.forEach(function(child){
+                var childInserted = false;
+                parentTabs.forEach(function(parent){
+                    // url - key for determining author's tab
+                    if(child.author === parent.url){
+                        parent.childTabs.push(child);
+                        childInserted = true;
+                    }
+                });
+
+                if(!childInserted){
+                    notInsertedChildren.push(child);
+                }
+            });
+
+            notInsertedChildren.forEach(function(child){
+                child.name = "My article";
+                child.childTabs = [];
+                parentTabs.push(child);
+            })
+
+            return parentTabs.length > 0 ? parentTabs : [];
+        };
+        plusWidget.getParentTabs = function(loModel){
             var models = [];
             for(var i = 0; i < loModel.itemListElement.length; i++){
                 if(!loModel.itemListElement[i].author){
-                    var blogUrl = loModel.itemListElement[i].url;
-                    var item = {name: loModel.itemListElement[i].name, url: loModel.itemListElement[i].url, items: []};
-                    for(var j = 0; j < loModel.itemListElement.length; j++){
-                        if(loModel.itemListElement[j].author && loModel.itemListElement[j].author == blogUrl){
-                            var elem = {name: loModel.itemListElement[j].name, url: loModel.itemListElement[j].url};
-                            item.items.push(elem);
-                        }
-                    }
-                    models.push(item);
+                    var parentTab = loModel.itemListElement[i];
+                    parentTab.childTabs = [];
+
+                    models.push(parentTab);
                 }
             }
             return models;
         };
-        document.registerElement('plus-widget', { prototype: plusWidget });
+        plusWidget.getChildTabs = function(loModel){
+            var models = [];
+            for(var i = 0; i < loModel.itemListElement.length; i++){
+                if(loModel.itemListElement[i].author){
+                    models.push(loModel.itemListElement[i]);
+                }
+            }
+            return models;
+        };
+        document.registerElement('plus-widget', {prototype: plusWidget});
     })(jQuery);
 </script>
