@@ -1,112 +1,125 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
 <template id="plus-plus-template">
     <li class="new panel active"><a href="#element4" data-parent="#nav-accordion" data-toggle="collapse">
         <span class="glyphicon glyphicon-plus"></span></a>
+
         <div class="collapse" id="element4"></div>
     </li>
 </template>
 
-<script>
-    (function ($) {
-        var webrunes = window.webrunes || {};
-
-        // incoming data (jsonLd)
-        var loModel = webrunes.jsonlds['ItemList'];
+<script type="application/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="application/javascript" src="/scripts/hub.min.js"></script>
+<script type="application/javascript">
+    CrossStorageHub.init([
+        {origin: /:\/\/(www\.)?webrunes.com$/, allow: ['get', 'set']},
+        {origin: /\.webrunes.com$/, allow: ['get', 'set', 'del']},
+        {origin: /.*localhost:300\d$/, allow: ['get', 'set', 'del', 'getKeys', 'clear']}
+    ]);
+</script>
+<script type="application/javascript">
+    (function ($, window) {
+        var wrioNamespace = window.wrio || {};
         var importDoc = document.currentScript.ownerDocument;
-
         // pulse tab-menu wrapper
         var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
         // sign '+' markup
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-        // browser address url
-        var href = window.location.origin + window.location.pathname;
 
-        var plusWidget = Object.create(HTMLElement.prototype);
+        var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
+        var storage = window.localStorage.getItem(storageKey);
 
-        // draw Pulse tabs on callback
-        plusWidget.createdCallback = function () {
-            var groupedModel = plusWidget.groupByAthour(loModel);
-            // draw pulse Tabs
-            for(var i = 0; i < groupedModel.length; i++){
-                // check if Tab's url same with browser's, if yes - make active
-                var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
-                var activeCss = groupedModel[i].url == href ? 'active' : '';
-                var $parentTab = $('<li/>', { class: 'panel ' + activeCss});
-                var $parentTabTitle = $('<a data-parent="#nav-accordion" data-toggle="collapse"></a>',{ class: collapseCss }).attr('href', '#element' + (i + 1))
-                        .html(groupedModel[i].name);
+        if (storage) {
+            var plusWidget = Object.create(HTMLElement.prototype);
+            // browser address url
+            var href = window.location.origin + window.location.pathname;
 
-                $parentTab.append($parentTabTitle);
+            // draw Pulse tabs on callback
+            plusWidget.createdCallback = function () {
+                var groupedModel = plusWidget.groupByAthour(loModel);
+                // draw pulse Tabs
+                for (var i = 0; i < groupedModel.length; i++) {
+                    // check if Tab's url same with browser's, if yes - make active
+                    var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
+                    var activeCss = groupedModel[i].url == href ? 'active' : '';
+                    var $parentTab = $('<li/>', {class: 'panel ' + activeCss});
+                    var $parentTabTitle = $('<a data-parent="#nav-accordion" data-toggle="collapse"></a>', {class: collapseCss}).attr('href', '#element' + (i + 1))
+                            .html(groupedModel[i].name);
 
-                // draw children tab below main authorTab
-                if(groupedModel[i].childTabs.length > 0){
-                    var $childTabsWrapper = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
+                    $parentTab.append($parentTabTitle);
 
-                    for(var j = 0; j < groupedModel[i].childTabs.length; j++){
-                        var $childTab = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
-                        var $childTabTitle = $('<a href="#"></a>').attr('href', groupedModel[i].childTabs[j].url).html(groupedModel[i].childTabs[j].name);
-                        $childTab.append($childTabTitle);
-                        $childTabsWrapper.append($childTab);
+                    // draw children tab below main authorTab
+                    if (groupedModel[i].childTabs.length > 0) {
+                        var $childTabsWrapper = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
+
+                        for (var j = 0; j < groupedModel[i].childTabs.length; j++) {
+                            var $childTab = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
+                            var $childTabTitle = $('<a href="#"></a>').attr('href', groupedModel[i].childTabs[j].url).html(groupedModel[i].childTabs[j].name);
+                            $childTab.append($childTabTitle);
+                            $childTabsWrapper.append($childTab);
+                        }
+                        var $div = $('<div/>', {
+                            id: 'element' + (i + 1),
+                            class: groupedModel[i].url == href ? 'active' : 'collapse'
+                        }).append($childTabsWrapper);
+                        $parentTab.append($div);
                     }
-                    var $div = $('<div/>', { id: 'element' + (i + 1), class: groupedModel[i].url == href ? 'active' : 'collapse'}).append($childTabsWrapper);
-                    $parentTab.append($div);
+                    $accordion.append($parentTab);
                 }
-                $accordion.append($parentTab);
-            }
-            $accordion.append($($plus));
-            this.outerHTML = $accordion.get(0).outerHTML;
-        };
-        plusWidget.groupByAthour = function(loModel){
-            if(!loModel) return [];
-            var parentTabs = plusWidget.getParentTabs(loModel);
-            var childTabs = plusWidget.getChildTabs(loModel);
-            var notInsertedChildren = [];
+                $accordion.append($($plus));
+                this.outerHTML = $accordion.get(0).outerHTML;
+            };
+            plusWidget.groupByAthour = function (loModel) {
+                if (!loModel) return [];
+                var parentTabs = plusWidget.getParentTabs(loModel);
+                var childTabs = plusWidget.getChildTabs(loModel);
+                var notInsertedChildren = [];
 
-            // crate relationship parent - children
-            childTabs.forEach(function(child){
-                var childInserted = false;
-                parentTabs.forEach(function(parent){
-                    // url - key for determining author's tab
-                    if(child.author === parent.url){
-                        parent.childTabs.push(child);
-                        childInserted = true;
+                // crate relationship parent - children
+                childTabs.forEach(function (child) {
+                    var childInserted = false;
+                    parentTabs.forEach(function (parent) {
+                        // url - key for determining author's tab
+                        if (child.author === parent.url) {
+                            parent.childTabs.push(child);
+                            childInserted = true;
+                        }
+                    });
+
+                    if (!childInserted) {
+                        notInsertedChildren.push(child);
                     }
                 });
 
-                if(!childInserted){
-                    notInsertedChildren.push(child);
-                }
-            });
+                notInsertedChildren.forEach(function (child) {
+                    child.name = "My article";
+                    child.childTabs = [];
+                    parentTabs.push(child);
+                })
 
-            notInsertedChildren.forEach(function(child){
-                child.name = "My article";
-                child.childTabs = [];
-                parentTabs.push(child);
-            })
+                return parentTabs.length > 0 ? parentTabs : [];
+            };
+            plusWidget.getParentTabs = function (loModel) {
+                var models = [];
+                for (var i = 0; i < loModel.itemList.length; i++) {
+                    if (!loModel.itemList[i].author) {
+                        var parentTab = loModel.itemList[i];
+                        parentTab.childTabs = [];
 
-            return parentTabs.length > 0 ? parentTabs : [];
-        };
-        plusWidget.getParentTabs = function(loModel){
-            var models = [];
-            for(var i = 0; i < loModel.itemListElement.length; i++){
-                if(!loModel.itemListElement[i].author){
-                    var parentTab = loModel.itemListElement[i];
-                    parentTab.childTabs = [];
-
-                    models.push(parentTab);
+                        models.push(parentTab);
+                    }
                 }
-            }
-            return models;
-        };
-        plusWidget.getChildTabs = function(loModel){
-            var models = [];
-            for(var i = 0; i < loModel.itemListElement.length; i++){
-                if(loModel.itemListElement[i].author){
-                    models.push(loModel.itemListElement[i]);
+                return models;
+            };
+            plusWidget.getChildTabs = function (loModel) {
+                var models = [];
+                for (var i = 0; i < loModel.itemList.length; i++) {
+                    if (loModel.itemList[i].author) {
+                        models.push(loModel.itemList[i]);
+                    }
                 }
-            }
-            return models;
+                return models;
+            };
+            document.registerElement('plus-widget', {prototype: plusWidget});
         };
-        document.registerElement('plus-widget', {prototype: plusWidget});
-    })(jQuery);
+    })(jQuery, window);
 </script>
+
