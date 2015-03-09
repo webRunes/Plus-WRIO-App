@@ -15,7 +15,6 @@ deploy:
   secret_access_key:
     secure: jS/GixCUB4isSx3Cn+EPlyYq4wP9XKfh4v7j0fZwe2QWFdwVlE8NH8DWuLQOrw6QfBa++qEg58o4mxe8uf446Au/NcKsHtykunfYGI9eV8iPvhFVHOW4SzvMcuwfVyoJPc4TyWawKqoff+bd/TVN5lqmUwtpKBS57reMHWxdD/A=
   bucket: wrio
-  local-dir: widget
-  upload-dir: Plus-WRIO-App/widget
+  upload-dir: Plus-WRIO-App
   acl: public_read
   
