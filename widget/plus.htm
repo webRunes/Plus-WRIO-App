@@ -7,7 +7,7 @@
 </template>
 
 <script type="application/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/hub.min.js"></script>
+<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/hub.js"></script>
 <script type="application/javascript">
     CrossStorageHub.init([
         {origin: /:\/\/(www\.)?webrunes.com$/, allow: ['get', 'set']},
@@ -19,23 +19,23 @@
     (function ($, window) {
         var wrioNamespace = window.wrio || {};
         var importDoc = document.currentScript.ownerDocument;
-        // pulse tab-menu wrapper
+        // plus tab-menu wrapper
         var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
         // sign '+' markup
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
 
         var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
-        var storage = window.localStorage.getItem(storageKey);
+        var storage = JSON.parse(window.localStorage.getItem(storageKey));
 
         if (storage) {
             var plusWidget = Object.create(HTMLElement.prototype);
             // browser address url
             var href = window.location.origin + window.location.pathname;
 
-            // draw Pulse tabs on callback
+            // draw Plus tabs on callback
             plusWidget.createdCallback = function () {
-                var groupedModel = plusWidget.groupByAthour(loModel);
-                // draw pulse Tabs
+                var groupedModel = plusWidget.groupByAthour(storage);
+                // draw plus Tabs
                 for (var i = 0; i < groupedModel.length; i++) {
                     // check if Tab's url same with browser's, if yes - make active
                     var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
