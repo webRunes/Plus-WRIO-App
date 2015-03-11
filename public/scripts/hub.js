@@ -160,7 +160,7 @@ CrossStorageHub._set = function(params) {
     item.expire = CrossStorageHub._now() + ttl;
   }
 
-  window.localStorage.setItem(params.key, JSON.stringify(item));
+  window.localStorage.setItem(params.key, JSON.stringify(item.value));
 };
 
 /**

@@ -25,7 +25,9 @@
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
 
         var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
-        var storage = JSON.parse(window.localStorage.getItem(storageKey));
+        var storageValue = window.localStorage.getItem(storageKey);
+
+        var storage = JSON.parse(storageValue ? storageValue : "");
 
         if (storage) {
             var plusWidget = Object.create(HTMLElement.prototype);
