@@ -26,10 +26,9 @@
 
         var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
         var storageValue = window.localStorage.getItem(storageKey);
+        var storage = JSON.parse(storageValue ? storageValue : "{}");
 
-        var storage = JSON.parse(storageValue ? storageValue : "");
-
-        if (storage) {
+        if (!$.isEmptyObject(storage)) {
             var plusWidget = Object.create(HTMLElement.prototype);
             // browser address url
             var href = window.location.origin + window.location.pathname;
