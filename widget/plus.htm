@@ -66,7 +66,7 @@
                     $accordion.append($parentTab);
                 }
                 $accordion.append($($plus));
-                this.outerHTML = $accordion.get(0).outerHTML;
+                this.innerHTML = $accordion.get(0).outerHTML;
             };
             plusWidget.groupByAthour = function (loModel) {
                 if (!loModel) return [];
