@@ -85,7 +85,15 @@ CrossStorageHub._listener = function(message) {
   // Ignore the ready message when viewing the hub directly
   if (message.data === 'cross-storage:ready') return;
 
-  request = JSON.parse(message.data);
+  try {
+    request = JSON.parse(message.data);
+  }catch (err){
+    return;
+  }
+
+  // Proceed only with suitable methods
+  if(!request.method) return;
+
   method = request.method.split('cross-storage:')[1];
 
   if (!method) {
