@@ -7,14 +7,7 @@
 </template>
 
 <script type="application/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/hub.js"></script>
-<script type="application/javascript">
-    CrossStorageHub.init([
-        {origin: /:\/\/(www\.)?webrunes.com$/, allow: ['get', 'set']},
-        {origin: /\.webrunes.com$/, allow: ['get', 'set', 'del']},
-        {origin: /.*localhost:300\d$/, allow: ['get', 'set', 'del', 'getKeys', 'clear']}
-    ]);
-</script>
+<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/client.js"></script>
 <script type="application/javascript">
     (function ($, window) {
         var wrioNamespace = window.wrio || {};
@@ -25,7 +18,19 @@
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
 
         var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
-        var storageValue = window.localStorage.getItem(storageKey);
+        var storageValue = null;
+        var storageClient = new CrossStorageClient('/Plus-WRIO-App/widget/storageClient.htm');
+
+        storageClient.onConnect().then(function () {
+            return storageClient.get(storageKey);
+        }).then(function (model) {
+            storageValue = model;
+        }).catch(function (err) {
+            console.log(err);
+        }).then(function() {
+            storageClient.close();
+        });
+
         var storage = JSON.parse(storageValue ? storageValue : "{}");
 
         if (!$.isEmptyObject(storage)) {

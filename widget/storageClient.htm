@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/hub.js"></script>
+<script type="application/javascript">
+    CrossStorageHub.init([
+        {origin: /:\/\/(www\.)?webrunes.com$/, allow: ['get', 'set']},
+        {origin: /\.webrunes.com$/, allow: ['get', 'set', 'del']},
+        {origin: /.*localhost:300\d$/, allow: ['get', 'set', 'del', 'getKeys', 'clear']}
+    ]);
+</script>
+</body>
+</html>
