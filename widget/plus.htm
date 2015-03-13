@@ -19,7 +19,7 @@
 
         var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
         var storageValue = null;
-        var storageClient = new CrossStorageClient('/Plus-WRIO-App/widget/storageHub.htm');
+        var storageClient = new CrossStorageClient(wrioNamespace.storageHubUrl + '/Plus-WRIO-App/widget/storageHub.htm');
 
         storageClient.onConnect().then(function () {
             return storageClient.get(storageKey);
