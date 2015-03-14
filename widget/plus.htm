@@ -16,24 +16,23 @@
         var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
         // sign '+' markup
         var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-
-        var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
-        var storageValue = null;
         var storageClient = new CrossStorageClient(wrioNamespace.storageHubUrl + '/Plus-WRIO-App/widget/storageHub.htm');
 
         storageClient.onConnect().then(function () {
+            var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
             return storageClient.get(storageKey);
         }).then(function (model) {
-            storageValue = model;
+            if (model) {
+                createCustomWidget(model)
+            }
+            return model;
         }).catch(function (err) {
             console.log(err);
-        }).then(function() {
+        }).then(function () {
             storageClient.close();
         });
 
-        var storage = JSON.parse(storageValue ? storageValue : "{}");
-
-        if (!$.isEmptyObject(storage)) {
+        function createCustomWidget(storage) {
             var plusWidget = Object.create(HTMLElement.prototype);
             // browser address url
             var href = window.location.origin + window.location.pathname;
