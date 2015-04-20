@@ -9,9 +9,10 @@
     <meta name="keywords" content="webRunes">
     <meta name="google-site-verification" content="wW3kG-1bD4IishxXaidLtiLMKNTR3S0MH7Dnd3HpoY8">
     <title>Plus list</title>
+
     <!-- Not present in the tutorial. Just for basic styling. -->   
 
-	<script type="application/ld+json">  
+    <script type="application/ld+json">  
         {    
         "@context": "http://schema.org",
         "@type": "ItemList",
@@ -90,135 +91,6 @@
   <body id="js-app-container">   
 
     <!--    <script src="scripts/demo.js"></script>-->
-	<script type="text/javascript" data-main="http://wrio.s3-website-us-east-1.amazonaws.com/WRIO-InternetOS/main.js" src="http://wrio.s3-website-us-east-1.amazonaws.com/WRIO-InternetOS/require.js"></script>
+    <script type="text/javascript" data-main="scripts/demo.js" src="scripts/require.js"></script>
   </body>
 </html>
-<!--<template id="plus-plus-template">
-    <li class="new panel active"><a href="#element4" data-parent="#nav-accordion" data-toggle="collapse">
-        <span class="glyphicon glyphicon-plus"></span></a>
-
-        <div class="collapse" id="element4"></div>
-    </li>
-</template>
-
-<script type="application/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="application/javascript" src="/Plus-WRIO-App/public/scripts/client.js"></script>
-<script type="application/javascript">
-    (function ($, window) {
-        var wrioNamespace = window.wrio || {};
-        var importDoc = document.currentScript.ownerDocument;
-        // plus tab-menu wrapper
-        var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
-        // sign '+' markup
-        var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-        var storageClient = new CrossStorageClient(wrioNamespace.storageHubUrl + '/Plus-WRIO-App/widget/storageHub.htm');
-
-        storageClient.onConnect().then(function () {
-            var storageKey = wrioNamespace.storageKey ? wrioNamespace.storageKey : "plusLdModel";
-            return storageClient.get(storageKey);
-        }).then(function (model) {
-            if (model) {
-                createCustomWidget(model)
-            }
-            return model;
-        }).catch(function (err) {
-            console.log(err);
-        }).then(function () {
-            storageClient.close();
-        });
-
-        function createCustomWidget(storage) {
-            var plusWidget = Object.create(HTMLElement.prototype);
-            // browser address url
-            var href = window.location.origin + window.location.pathname;
-
-            // draw Plus tabs on callback
-            plusWidget.createdCallback = function () {
-                var groupedModel = plusWidget.groupByAthour(storage);
-                // draw plus Tabs
-                for (var i = 0; i < groupedModel.length; i++) {
-                    // check if Tab's url same with browser's, if yes - make active
-                    var collapseCss = groupedModel[i].url == href ? '' : 'collapsed';
-                    var activeCss = groupedModel[i].url == href ? 'active' : '';
-                    var $parentTab = $('<li/>', {class: 'panel ' + activeCss});
-                    var $parentTabTitle = $('<a data-parent="#nav-accordion" data-toggle="collapse"></a>', {class: collapseCss}).attr('href', '#element' + (i + 1))
-                            .html(groupedModel[i].name);
-
-                    $parentTab.append($parentTabTitle);
-
-                    // draw children tab below main authorTab
-                    if (groupedModel[i].childTabs.length > 0) {
-                        var $childTabsWrapper = $('<ul class="nav nav-pills nav-stacked sub"></ul>');
-
-                        for (var j = 0; j < groupedModel[i].childTabs.length; j++) {
-                            var $childTab = $('<li><a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a></li>');
-                            var $childTabTitle = $('<a href="#"></a>').attr('href', groupedModel[i].childTabs[j].url).html(groupedModel[i].childTabs[j].name);
-                            $childTab.append($childTabTitle);
-                            $childTabsWrapper.append($childTab);
-                        }
-                        var $div = $('<div/>', {
-                            id: 'element' + (i + 1),
-                            class: groupedModel[i].url == href ? 'active' : 'collapse'
-                        }).append($childTabsWrapper);
-                        $parentTab.append($div);
-                    }
-                    $accordion.append($parentTab);
-                }
-                $accordion.append($($plus));
-                this.innerHTML = $accordion.get(0).outerHTML;
-            };
-            plusWidget.groupByAthour = function (loModel) {
-                if (!loModel) return [];
-                var parentTabs = plusWidget.getParentTabs(loModel);
-                var childTabs = plusWidget.getChildTabs(loModel);
-                var notInsertedChildren = [];
-
-                // crate relationship parent - children
-                childTabs.forEach(function (child) {
-                    var childInserted = false;
-                    parentTabs.forEach(function (parent) {
-                        // url - key for determining author's tab
-                        if (child.author === parent.url) {
-                            parent.childTabs.push(child);
-                            childInserted = true;
-                        }
-                    });
-
-                    if (!childInserted) {
-                        notInsertedChildren.push(child);
-                    }
-                });
-
-                notInsertedChildren.forEach(function (child) {
-                    child.name = "My article";
-                    child.childTabs = [];
-                    parentTabs.push(child);
-                })
-
-                return parentTabs.length > 0 ? parentTabs : [];
-            };
-            plusWidget.getParentTabs = function (loModel) {
-                var models = [];
-                for (var i = 0; i < loModel.itemList.length; i++) {
-                    if (!loModel.itemList[i].author) {
-                        var parentTab = loModel.itemList[i];
-                        parentTab.childTabs = [];
-
-                        models.push(parentTab);
-                    }
-                }
-                return models;
-            };
-            plusWidget.getChildTabs = function (loModel) {
-                var models = [];
-                for (var i = 0; i < loModel.itemList.length; i++) {
-                    if (loModel.itemList[i].author) {
-                        models.push(loModel.itemList[i]);
-                    }
-                }
-                return models;
-            };
-            document.registerElement('plus-widget', {prototype: plusWidget});
-        };
-    })(jQuery, window);
-</script>-->
