@@ -1,5 +1,5 @@
 //var app = require("./wrio_app.js").init(express);
-var importUrl = './'; 
+var importUrl = 'http://wrio.s3-website-us-east-1.amazonaws.com/'; 
 var wrio = {};
 wrio.storageKey = 'plusLdModel';
 wrio.storageHubUrl = importUrl;
