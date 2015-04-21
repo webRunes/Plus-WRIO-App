@@ -12,8 +12,7 @@ var localStorageJson;
 var finalLocalArray = [];
 var complete_script = [];
 var page_title=document.title;
-
-
+ 
 (function(){ 
       'use strict';
 	  $('body').on('click','.parentNodeA',function() {
@@ -185,7 +184,7 @@ var getlocalStorageJson = function(json){
  //  function for createCustomWidget
   function createCustomWidget(storage) {
      
-		 var url = importUrl + '/Plus-WRIO-App-master/widget/plus.htm';
+		 var url = importUrl + 'Plus-WRIO-App/widget/plus.htm';
 		 $.ajax({
 			   url: url,
 			   dataType: 'html',
