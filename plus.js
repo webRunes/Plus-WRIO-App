@@ -13,7 +13,7 @@ var finalLocalArray = [];
 var complete_script = [];
 var page_title=document.title;
 
-
+ 
 (function(){ 
       'use strict';
 	  $('body').on('click','.parentNodeA',function() {
