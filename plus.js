@@ -7,7 +7,7 @@ var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 var wrioNamespace = window.wrio || {}; 
 var storeageKeys=[];
 var href =window.location.href; 
-var storageHubPath='storageHub.htm';
+var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
 var complete_script = [];
