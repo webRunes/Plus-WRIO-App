@@ -23,7 +23,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
 
-
 passport.serializeUser(function (user, done) {
 	done(null, user);
 });
@@ -32,17 +31,17 @@ passport.deserializeUser(function (obj, done) {
 	done(null, obj);
 });
 
-passport.use(new GooglePlusStrategy({
-		clientID: nconf.get('api:google:clientId'),
-		clientSecret: nconf.get('api:google:clientSecret'),
-		callbackURL: nconf.get('api:google:callbackUrl')
-	},
-	function (accessToken, refreshToken, profile, done) {
-		process.nextTick(function () {
-			return done(null, profile);
-		});
-	}
-));
+//passport.use(new GooglePlusStrategy({
+//		clientID: nconf.get('api:google:clientId'),
+//		clientSecret: nconf.get('api:google:clientSecret'),
+//		callbackURL: nconf.get('api:google:callbackUrl')
+//	},
+//	function (accessToken, refreshToken, profile, done) {
+//		process.nextTick(function () {
+//			return done(null, profile);
+//		});
+//	}
+//));
 
 app.get('/', function (request, response) {
 	response.render('index', {user: request.user});
@@ -67,6 +66,9 @@ app.get('/logout', function (request, response) {
 	request.logout();
 	response.redirect('/');
 });
+
+app.listen(3000);
+console.log("app running on port 3000");
 
 function ensureAuthenticated(request, response, next) {
 	if (request.isAuthenticated()) {
