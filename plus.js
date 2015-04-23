@@ -90,7 +90,7 @@ var getlocalStorageJson = function(json){
 }
 
 function loadPlusHtml(){
-     var url = importUrl + '/Plus-WRIO-App-master/widget/plus.htm';
+     var url = importUrl + 'Plus-WRIO-App/widget/plus.htm';
 		 $.ajax({
 			   url: url,
 			   dataType: 'html',
