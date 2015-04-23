@@ -546,7 +546,6 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 	    var storage = new CrossStorageClient(storageHubPath);
         if (typeof CrossStorageClient === 'function'){
 		    storage.onConnect().then(function () {
-		    	alert('here');
 				return storage.get(wrio.storageKey);
             }).then(function (model) {
                 if (model) {
