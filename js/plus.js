@@ -12,7 +12,6 @@ var href =window.location.href;
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
-var complete_script = [];
 var page_title=document.title;
 
 
