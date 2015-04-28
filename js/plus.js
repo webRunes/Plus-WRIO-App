@@ -14,7 +14,6 @@ var localStorageJson;
 var finalLocalArray = [];
 var page_title=document.title;
 
-
 (function(){ 
       'use strict';
 	  $('body').on('click','.parentNodeA',function() {
@@ -95,12 +94,7 @@ function loadPlusHtml(){
 			   dataType: 'html',
 			   success: function(data) {
 				 plus_html= data;
-				 
-				 	// var html = $.parseHTML( data ),
-                    //plus_html=  html['0'].innerHTML;			 
-		//  alert(plus_html);
-	          $('#nav-accordion').append(plus_html);
-				
+	             $('#nav-accordion').append(plus_html);	
 		  }
 		 });	
 }
@@ -215,7 +209,6 @@ function loadPlusHtml(){
 		
 		// sign '+' markup
         //var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-		
 		  is_active=false;
 		  var is_activeurl=getParentActiveUrl(href,storage); // for get parent active url 
  		  if(is_activeurl!=undefined){
@@ -248,10 +241,7 @@ function loadPlusHtml(){
 				   var parentStatus="active";
 				}
 				var $parentTab = $('<li/>', {class: 'panel '+parentStatus+' rootNode'+i});
-			    
-			
-				 
-				 
+
 				  if(groupedModel[i].recentOpenUrl!=groupedModel[i].url && groupedModel[i].recentOpenUrl!="" && groupedModel[i].recentOpenUrl!=href ){
 				     var url=groupedModel[i].recentOpenUrl;
 				 }else{
@@ -304,10 +294,7 @@ function loadPlusHtml(){
 				}
 				$accordion.append($parentTab);
 			}
-			 
-				  //alert($accordion.get(0).outerHTML);
-				  //$accordion.append('<li class="new panel"><a class="collapsed" data-toggle="collapse" data-parent="#nav-accordion" href="#"><span class="glyphicon glyphicon-plus"></span></a><div id="element4" class="collapse"></div></li>');
-			//alert($accordion.get(0).outerHTML);
+	  
 			return (($accordion.get(0).outerHTML));
 		  
 	}; // end createCustomWidget
