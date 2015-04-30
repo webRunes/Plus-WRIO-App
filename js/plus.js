@@ -9,7 +9,7 @@ var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 var wrioNamespace = window.wrio || {}; 
 var storeageKeys=[];
 var href =window.location.href; 
-if(href.substr(-1) == '/') {
+if(href!= undefined && href.substr(-1) == '/') {
 	href  = href.substring(0,href.length - 1);   // for remove "/" from string
 }
 
@@ -69,7 +69,7 @@ var getlocalStorageJson = function(json){
 		if(comment['author']!=undefined){
 	         var authorList = comment['author'];	
 			 var sameas=authorList.sameAs; //sameAs
-			 if(sameas.substr(-1) == '/') {
+			 if(sameas!= undefined && sameas.substr(-1) == '/') {
 	           sameas  = sameas.substring(0,sameas.length - 1); // for remove "/" from string 
               }
 				 
@@ -535,7 +535,7 @@ return {
 			var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 			var wrioNamespace = window.wrio || {}; 
 			var href =window.location.href; 
-			if(href.substr(-1) == '/') {
+			if(href!= undefined && href.substr(-1) == '/') {
 				href  = href.substring(0,href.length - 1);   // for remove "/" from string
 			}
 
