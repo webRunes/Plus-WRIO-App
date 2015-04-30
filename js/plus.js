@@ -553,6 +553,9 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 			 var is_existq=false;
 			 var finalLocalArray=getlocalStorageJson(complete_script);
 
+             console.log(complete_script);  // for testing
+             console.log(finalLocalArray);   // for testing
+
 			 if (model.itemList && model.itemList.length>0) {
 					model.itemList.forEach(function (element) {
 					uArray.push(element.url);
@@ -560,6 +563,13 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 					
 				 }); 
 			 }	
+			
+			
+			console.log("mytest");   // for testing
+			console.log(href);   // for testing
+			console.log(model);   // for testing
+			console.log("mytest end");   // for testing
+			
 			
 			 var parent_url=getParentActiveUrl(href,model); // for get parent tab url
 			if (model.itemList && model.itemList.length >0) {
