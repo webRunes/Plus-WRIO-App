@@ -9,6 +9,10 @@ var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 var wrioNamespace = window.wrio || {}; 
 var storeageKeys=[];
 var href =window.location.href; 
+if(href.substr(-1) == '/') {
+	href  = href.substring(0,href.length - 1);   // for remove "/" from string
+}
+
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
@@ -64,13 +68,18 @@ var getlocalStorageJson = function(json){
 		}
 		if(comment['author']!=undefined){
 	         var authorList = comment['author'];	
-				  row = {"@type": comment['author']['@type'],
+			 var sameas=authorList.sameAs; //sameAs
+			 if(sameas.substr(-1) == '/') {
+	           sameas  = sameas.substring(0,sameas.length - 1); // for remove "/" from string 
+              }
+				 
+				 row = {"@type": comment['author']['@type'],
 				         "givenName": authorList.givenName,
 						 "familyName": authorList.familyName,
 						 "name": page_title,
 						 "url": href,  //authorList.sameAs
 						 "author":'',
-						 "sameAs": authorList.sameAs, //sameAs
+						 "sameAs": sameas, //sameAs
 						}
 			       finalLocalArray.push(row);	
 		}	
@@ -521,11 +530,15 @@ return {
             size: "large",
             updatePlusStorage: function() {
             var wrio = {};
-wrio.storageKey = 'plusLdModel';
-wrio.storageHubUrl = importUrl;
-var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
-var wrioNamespace = window.wrio || {}; 
-var href =window.location.href; 
+			wrio.storageKey = 'plusLdModel';
+			wrio.storageHubUrl = importUrl;
+			var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
+			var wrioNamespace = window.wrio || {}; 
+			var href =window.location.href; 
+			if(href.substr(-1) == '/') {
+				href  = href.substring(0,href.length - 1);   // for remove "/" from string
+			}
+
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
     
         var reactObj1 = this;
@@ -553,8 +566,8 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 			 var is_existq=false;
 			 var finalLocalArray=getlocalStorageJson(complete_script);
 
-             console.log(complete_script);  // for testing
-             console.log(finalLocalArray);   // for testing
+             //console.log(complete_script);  // for testing
+            // console.log(finalLocalArray);   // for testing
 
 			 if (model.itemList && model.itemList.length>0) {
 					model.itemList.forEach(function (element) {
@@ -565,10 +578,10 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 			 }	
 			
 			
-			console.log("mytest");   // for testing
-			console.log(href);   // for testing
+			//console.log("mytest");   // for testing
+			//console.log(href);   // for testing
 			console.log(model);   // for testing
-			console.log("mytest end");   // for testing
+			//console.log("mytest end");   // for testing
 			
 			
 			 var parent_url=getParentActiveUrl(href,model); // for get parent tab url
