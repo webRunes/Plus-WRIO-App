@@ -9,6 +9,12 @@ var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 var wrioNamespace = window.wrio || {}; 
 var storeageKeys=[];
 var href =window.location.href; 
+
+if(href!= undefined ){
+   href = href.replace('index.html', '');  // for remove index.html
+   href = href.replace('index.htm', '');  // for remove index.htm
+}
+
 if(href!= undefined && href.substr(-1) == '/') {
 	href  = href.substring(0,href.length - 1);   // for remove "/" from string
 }
@@ -69,6 +75,12 @@ var getlocalStorageJson = function(json){
 		if(comment['author']!=undefined){
 	         var authorList = comment['author'];	
 			 var sameas=authorList.sameAs; //sameAs
+			 
+			 if(sameas!= undefined ){
+			   sameas = sameas.replace('index.html', '');  // for remove index.html
+			   sameas = sameas.replace('index.htm', '');  // for remove index.htm
+			 }  
+			 
 			 if(sameas!= undefined && sameas.substr(-1) == '/') {
 	           sameas  = sameas.substring(0,sameas.length - 1); // for remove "/" from string 
               }
@@ -535,6 +547,10 @@ return {
 			var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 			var wrioNamespace = window.wrio || {}; 
 			var href =window.location.href; 
+			if(href!= undefined ){
+			   href = href.replace('index.html', '');  // for remove index.html
+			   href = href.replace('index.htm', '');  // for remove index.htm
+			}
 			if(href!= undefined && href.substr(-1) == '/') {
 				href  = href.substring(0,href.length - 1);   // for remove "/" from string
 			}
@@ -566,9 +582,7 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 			 var is_existq=false;
 			 var finalLocalArray=getlocalStorageJson(complete_script);
 
-             //console.log(complete_script);  // for testing
-            // console.log(finalLocalArray);   // for testing
-
+            
 			 if (model.itemList && model.itemList.length>0) {
 					model.itemList.forEach(function (element) {
 					uArray.push(element.url);
@@ -576,12 +590,6 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 					
 				 }); 
 			 }	
-			
-			
-			//console.log("mytest");   // for testing
-			//console.log(href);   // for testing
-			console.log(model);   // for testing
-			//console.log("mytest end");   // for testing
 			
 			
 			 var parent_url=getParentActiveUrl(href,model); // for get parent tab url
