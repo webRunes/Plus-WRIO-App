@@ -22,6 +22,9 @@ if(href!= undefined && href.substr(-1) == '/') {
 if(href!= undefined && href.indexOf("#") != -1){
    var hrefArray = href.split("#"); 
    href=hrefArray['0']?hrefArray['0']:'';
+   if(href!= undefined && href.substr(-1) == '/') {
+	 href  = href.substring(0,href.length - 1);  
+   }
 }
 
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
@@ -459,7 +462,10 @@ return {
 			if(href!= undefined && href.indexOf("#") != -1){
 			   var hrefArray = href.split("#"); 
 			   href=hrefArray['0']?hrefArray['0']:'';
-			}
+			   if(href!= undefined && href.substr(-1) == '/') {
+	              href  = href.substring(0,href.length - 1);  
+               }
+		    }
 			
 	var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
     
