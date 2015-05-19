@@ -19,6 +19,12 @@ if(href!= undefined && href.substr(-1) == '/') {
 	href  = href.substring(0,href.length - 1);   // for remove "/" from string
 }
 
+// for remove # from url
+if(href!= undefined && href.indexOf("#") != -1){
+   var hrefArray = href.split("#"); 
+   href=hrefArray['0']?hrefArray['0']:'';
+}
+
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
@@ -553,6 +559,12 @@ return {
 			}
 			if(href!= undefined && href.substr(-1) == '/') {
 				href  = href.substring(0,href.length - 1);   // for remove "/" from string
+			}
+			
+			// for remove # from url
+			if(href!= undefined && href.indexOf("#") != -1){
+			   var hrefArray = href.split("#"); 
+			   href=hrefArray['0']?hrefArray['0']:'';
 			}
 
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
