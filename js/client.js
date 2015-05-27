@@ -429,3 +429,5 @@ CrossStorageClient.prototype._request = function(method, params) {
     }
   });
 };
+
+module.exports = CrossStorageClient;
