@@ -44,6 +44,8 @@
  * @property {function} _listener  The listener added to the window
  * @property {Window}   _hub       The hub window
  */
+var Promise = require("bluebird");
+
 function CrossStorageClient(url, opts) {
   opts = opts || {};
 
