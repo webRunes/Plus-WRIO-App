@@ -1,4 +1,4 @@
-var $ = require('jquery');
+var $ = require('min-jquery');
 var CrossStorageClient = require('./client');
 var importUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/';
 var wrio = {};
