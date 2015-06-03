@@ -27,6 +27,8 @@
     "nconf": "*",
     "passport": "0.2.1",
     "passport-google-oauth": "*",
+    "react": "^0.13.3",
+    "reflux": "^0.2.7",
     "superagent": "^1.2.0"
   }
 }
