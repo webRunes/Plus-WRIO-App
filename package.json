@@ -17,13 +17,16 @@
     "aws-sdk-apis": "*",
     "bluebird": "^2.9.27",
     "body-parser": "1.7.0",
+    "cash-dom": "^1.0.0",
     "cookie-parser": "1.3.2",
     "ejs": "1.0.0",
     "express": "4.9.4",
     "express-session": "*",
+    "jquery": "^2.1.0-beta2",
     "min-jquery": "^1.2.20",
     "nconf": "*",
     "passport": "0.2.1",
-    "passport-google-oauth": "*"
+    "passport-google-oauth": "*",
+    "superagent": "^1.2.0"
   }
 }
