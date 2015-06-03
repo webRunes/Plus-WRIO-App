@@ -16,35 +16,42 @@ var Plus = React.createClass({
 });
 
 var List = React.createClass({
+    propTypes: {
+        data: React.PropTypes.array.isRequired
+    },
     render: function() {
-    	var lis = this.props.data.map(function (element) {
-    		return <Element data={element} />;
-    	});
+        var lis = this.props.data.map(function (item, key) {
+            if (Object.prototype.toString.call(item) === '[object Array]') {
+                return (
+                    <li>
+                        <List data={item} key={key} />
+                    </li>
+                );
+            } else {
+                return <Element data={item} key={key} />;
+            }
+        });
         return (
             <ul id="nav-accordion" className="nav navbar-var">
-            	{lis}
+                {lis}
             </ul>
         );
     }
 });
 
 var Element = React.createClass({
-    		              "@type": "Article",
-              "inLanguage": "en-US",
-              "author": "http://webrunes.github.io/webRunes-WRIO-Hub/Alexey-Anshakov.html",
-              "name": "webRunes",
-              "about": "Официальная страница webRunes и ноды webrunes.com. Здесь вы можете не только следить за новостями проекта, но и даже купить share компании.",
-              "image": "http://domain1.com/image1.jpg",
-              "url": "http://webrunes.com"
+    propTypes: {
+        data: React.PropTypes.object.isRequired
+    },
     delete: function () {
-
+        console.log('TODO delete');
     },
     render: function() {
-    	var element = this.props.element;
+        var o = this.props.data;
         return (
-            if (this.props.author)	<a onClick={this.delete}><span class="glyphicon glyphicon-remove btn btn-xs" /></a>
             <li>
-                <a href={this.props.url}>{this.props.name}</a>
+                <a onClick={this.delete}><span class="glyphicon glyphicon-remove btn btn-xs" /></a>
+                <a href={o.url}>{o.name}</a>
             </li>
         );
     }

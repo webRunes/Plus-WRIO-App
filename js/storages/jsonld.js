@@ -11,11 +11,34 @@ module.exports = Reflux.createStore({
     },
     init: function () {
         this.getHttp(
-            this.getUrl()
+            this.getUrl(),
+            this.core
         );
     },
     data: {},
-    getHttp: function (url) {
+    pending: 0,
+    onData: function (key, val) {
+        if (this.data[key] === undefined) {
+            this.data[key] = [];
+        }
+        this.data[key].push(val);
+        this.pending -= 1;
+        if (this.pending === 0) {
+            this.trigger(
+                this.output()
+            );
+        }
+    },
+    output: function () {
+        var data = this.data,
+            root = [].concat(data.root);
+        delete data.root;
+        data = Object.keys(data).map(function (key) {
+            return data[key];
+        });
+        return data.concat(root);
+    },
+    getHttp: function (url, cb) {
         request.get(
             url,
             function (err, result) {
@@ -23,31 +46,44 @@ module.exports = Reflux.createStore({
                     throw err;
                 }
                 var e = document.createElement('div'),
-                    json,
-                    name;
+                    result;
                 e.innerHTML = result.text;
-                json = JSON.parse(e.getElementsByTagName('script')[0].innerText);
-                name = json.name;
-                if (this.data[name] === undefined) {
-                    this.data[name] = [];
-                }
-                json.itemListElement.forEach(function (o) {
-                    this.data[name].push({
-                        name: o.name,
-                        url: o.url,
-                        author: o.author
-                    });
-                }, this);
-                this.cache[url] = obj;
-                this.trigger(obj);
+                result = e.getElementsByTagName('script').map(function (el) {
+                    return JSON.parse(el.innerText);
+                });
+                cb.call(this, result);
             }.bind(this)
         );
     },
+    core: function (json) {
+        this.pending += json.itemListElement.length;
+        json.itemListElement.forEach(function (o) {
+            o = {
+                name: o.name,
+                url: o.url,
+                author: o.author
+            };
+            var author = o.author,
+                root = [];
+            if (author) {
+                this.getHttp(author, function (json) {
+                    var name;
+                    if (json['@type'] === 'Article') {
+                        name = json.name;
+                    } else {
+                        console.warn('plus: author [' + author + '] do not have type Article');
+                    }
+                    this.onData(name, o);
+                }.bind(this));
+            } else {
+                this.onData('root', o);
+            }
+        }, this);
+    },
     getInitialState: function () {
-        return this.data;
+        return this.output();
     },
     onRead: function (url) {
-        
-        this.trigger(this.data);
+        this.trigger(this.output());
     }
 });
