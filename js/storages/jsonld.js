@@ -1,6 +1,7 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
-    Actions = require('../actions/jsonld');
+    Actions = require('../actions/jsonld'),
+    uuid = require('uuid');
 
 module.exports = Reflux.createStore({
     listenables: Actions,
@@ -17,73 +18,74 @@ module.exports = Reflux.createStore({
     },
     data: {},
     pending: 0,
-    onData: function (key, val) {
-        if (this.data[key] === undefined) {
-            this.data[key] = [];
+    onData: function (o, name) {
+        if (name) {
+            if (this.data[name] === undefined) {
+                this.data[name] = [];
+            }
+            this.data[name].push(o);
+        } else {
+            if (o.author) {
+                console.warn('plus: author [' + o.author + '] do not have type Article');
+            }
+            name = uuid.v1();
+            this.data[name] = o;
         }
-        this.data[key].push(val);
         this.pending -= 1;
         if (this.pending === 0) {
-            this.trigger(
-                this.output()
-            );
+            this.trigger(this.data);
         }
-    },
-    output: function () {
-        var data = this.data,
-            root = [].concat(data.root);
-        delete data.root;
-        data = Object.keys(data).map(function (key) {
-            return data[key];
-        });
-        return data.concat(root);
     },
     getHttp: function (url, cb) {
         request.get(
             url,
             function (err, result) {
-                if (err) {
-                    throw err;
+                if (!err) {
+                    var e = document.createElement('div');
+                    e.innerHTML = result.text;
+                    result = Array.prototype.map.call(e.getElementsByTagName('script'), function (el) {
+                        return JSON.parse(el.innerText);
+                    });
                 }
-                var e = document.createElement('div'),
-                    result;
-                e.innerHTML = result.text;
-                result = e.getElementsByTagName('script').map(function (el) {
-                    return JSON.parse(el.innerText);
-                });
-                cb.call(this, result);
+                cb.call(this, result || []);
             }.bind(this)
         );
     },
-    core: function (json) {
-        this.pending += json.itemListElement.length;
-        json.itemListElement.forEach(function (o) {
-            o = {
-                name: o.name,
-                url: o.url,
-                author: o.author
-            };
-            var author = o.author,
-                root = [];
-            if (author) {
-                this.getHttp(author, function (json) {
-                    var name;
-                    if (json['@type'] === 'Article') {
-                        name = json.name;
+    core: function (jsons) {
+        var i, json;
+        for (i = 0; i < jsons.length; i += 1) {
+            json = jsons[i];
+            if (json.itemListElement) {
+                this.pending += json.itemListElement.length;
+                json.itemListElement.forEach(function (o) {
+                    o = {
+                        name: o.name,
+                        url: o.url,
+                        author: o.author
+                    };
+                    var author = o.author;
+                    if (author) {
+                        this.getHttp(author, function (jsons) {
+                            var i, name;
+                            for (i = 0; i < jsons.length; i += 1) {
+                                if (json[i]['@type'] === 'Article') {
+                                    name = json[i].name;
+                                    i = jsons.length;
+                                }
+                            }
+                            this.onData(o, name);
+                        }.bind(this));
                     } else {
-                        console.warn('plus: author [' + author + '] do not have type Article');
+                        this.onData(o);
                     }
-                    this.onData(name, o);
-                }.bind(this));
-            } else {
-                this.onData('root', o);
+                }, this);
             }
-        }, this);
+        }
     },
     getInitialState: function () {
-        return this.output();
+        return this.data;
     },
     onRead: function (url) {
-        this.trigger(this.output());
+        this.trigger(this.data);
     }
 });
