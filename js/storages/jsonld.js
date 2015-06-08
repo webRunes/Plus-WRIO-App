@@ -6,7 +6,8 @@ var Reflux = require('reflux'),
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
+        var host = (true) ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
+        //var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
             theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
@@ -43,8 +44,10 @@ module.exports = Reflux.createStore({
                 if (!err) {
                     var e = document.createElement('div');
                     e.innerHTML = result.text;
-                    result = Array.prototype.map.call(e.getElementsByTagName('script'), function (el) {
-                        return JSON.parse(el.innerText);
+                    result = Array.prototype.filter.call(e.getElementsByTagName('script'), function (el) {
+                        return el.type === 'application/ld+json';
+                    }).map(function (el) {
+                        return JSON.parse(el.textContent);
                     });
                 }
                 cb.call(this, result || []);
@@ -68,8 +71,8 @@ module.exports = Reflux.createStore({
                         this.getHttp(author, function (jsons) {
                             var i, name;
                             for (i = 0; i < jsons.length; i += 1) {
-                                if (json[i]['@type'] === 'Article') {
-                                    name = json[i].name;
+                                if (jsons[i]['@type'] === 'Article') {
+                                    name = jsons[i].name;
                                     i = jsons.length;
                                 }
                             }
@@ -85,7 +88,7 @@ module.exports = Reflux.createStore({
     getInitialState: function () {
         return this.data;
     },
-    onRead: function (url) {
+    onRead: function () {
         this.trigger(this.data);
     }
 });
