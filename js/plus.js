@@ -1,6 +1,6 @@
 var $ = require('min-jquery');
 var CrossStorageClient = require('./client');
-var importUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/';
+var importUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/';
 var wrio = {};
 wrio.storageKey = 'plusLdModel';
 wrio.storageHubUrl = importUrl;
@@ -27,7 +27,7 @@ if(href!= undefined && href.indexOf("#") != -1){
    }
 }
 
-var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
+var storageHubPath = 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
 var page_title=document.title;
@@ -467,7 +467,7 @@ module.exports = {
                }
 		    }
 			
-	var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
+	var storageHubPath='http://wrioos.com.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
     
         var reactObj1 = this;
 	    var storage = new CrossStorageClient(storageHubPath);
