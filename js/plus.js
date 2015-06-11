@@ -1,7 +1,6 @@
-define(['jquery'], function() {   
-
-//var app = require("./wrio_app.js").init(express);
-var importUrl = 'http://wrio.s3-website-us-east-1.amazonaws.com/';
+var $ = require('min-jquery');
+var CrossStorageClient = require('./client');
+var importUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/';
 var wrio = {};
 wrio.storageKey = 'plusLdModel';
 wrio.storageHubUrl = importUrl;
@@ -9,12 +8,29 @@ var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
 var wrioNamespace = window.wrio || {}; 
 var storeageKeys=[];
 var href =window.location.href; 
+
+if(href!= undefined ){
+   href = href.replace('index.html', '');  // to remove index.html
+   href = href.replace('index.htm', '');  // to remove index.htm
+}
+
+if(href!= undefined && href.substr(-1) == '/') {
+	href  = href.substring(0,href.length - 1);   // for remove "/" from string
+}
+
+// to remove # from url
+if(href!= undefined && href.indexOf("#") != -1){
+   var hrefArray = href.split("#"); 
+   href=hrefArray['0']?hrefArray['0']:'';
+   if(href!= undefined && href.substr(-1) == '/') {
+	 href  = href.substring(0,href.length - 1);  
+   }
+}
+
 var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
 var localStorageJson;
 var finalLocalArray = [];
-var complete_script = [];
 var page_title=document.title;
-
 
 (function(){ 
       'use strict';
@@ -66,13 +82,24 @@ var getlocalStorageJson = function(json){
 		}
 		if(comment['author']!=undefined){
 	         var authorList = comment['author'];	
-				  row = {"@type": comment['author']['@type'],
+			 var sameas=authorList.sameAs; //sameAs
+			 
+			 if(sameas!= undefined ){
+			   sameas = sameas.replace('index.html', '');  // for remove index.html
+			   sameas = sameas.replace('index.htm', '');  // for remove index.htm
+			 }  
+			 
+			 if(sameas!= undefined && sameas.substr(-1) == '/') {
+	           sameas  = sameas.substring(0,sameas.length - 1); // for remove "/" from string 
+              }
+				 
+				 row = {"@type": comment['author']['@type'],
 				         "givenName": authorList.givenName,
 						 "familyName": authorList.familyName,
 						 "name": page_title,
 						 "url": href,  //authorList.sameAs
 						 "author":'',
-						 "sameAs": authorList.sameAs, //sameAs
+						 "sameAs": sameas, //sameAs
 						}
 			       finalLocalArray.push(row);	
 		}	
@@ -96,118 +123,12 @@ function loadPlusHtml(){
 			   dataType: 'html',
 			   success: function(data) {
 				 plus_html= data;
-				 
-				 	// var html = $.parseHTML( data ),
-                    //plus_html=  html['0'].innerHTML;			 
-		//  alert(plus_html);
-	          $('#nav-accordion').append(plus_html);
-				
+	             $('#nav-accordion').append(plus_html);	
 		  }
 		 });	
 }
 
-
-//  function for set localStorage
- // function updatePlusStorage() {
- //        var reactObj1 = this;
-	//     var storage = new CrossStorageClient(storageHubPath);
- //        if (typeof CrossStorageClient === 'function'){
-	// 	    storage.onConnect().then(function () {
-	// 			return storage.get(wrio.storageKey);
- //            }).then(function (model) {
- //                if (model) {
- //                  return model;
- //                }
- //                else {
-	//                 return {
- //                        "@context": "http://schema.org",
- //                        "@type": ["ItemList"],
- //                        "name": "My Plus List",
- //                        "itemList": []
- //                    };
- //                }
- //            }).then(function (model) {
-			
-	// 		 var urlExists = false;
-	// 		 uArray=[];
-	// 		 authorArray=[];
-	// 		 var is_existq=false;
-	// 		 var finalLocalArray=getlocalStorageJson(complete_script);
-
-	// 		 if (model.itemList && model.itemList.length>0) {
-	// 				model.itemList.forEach(function (element) {
-	// 				uArray.push(element.url);
-	// 				authorArray.push(element.author);
-					
-	// 			 }); 
-	// 		 }	
-			
-	// 		 var parent_url=getParentActiveUrl(href,model); // for get parent tab url
-	// 		if (model.itemList && model.itemList.length >0) {
-	// 		   finalLocalArray.forEach(function (index) {
-	// 			   var is_exist= uArray.indexOf(index.url); 
-	// 			   var is_author  = authorArray.indexOf(href); 
-	// 			   if(is_exist == -1 ){
-					
-	// 				     row =   {"@type": 'Article',
-	// 							  "name": index.name,
-	// 							  "familyName":index.familyName,
-	// 							  "givenName":index.givenName,
-	// 							  "url": href,
-	// 							  "recentOpenUrl": "",
-	// 							  "author":'',
-	// 							  "sameAs": index.sameAs, //sameAs
-	// 							 }
-	// 							model.itemList.push(row);
-	// 			        is_existq=true;   
-						
-	// 					  for(i=0;i<model.itemList.length;i++){   
-	// 						      if(index.sameAs==model.itemList[i].url){
-	// 							      recentUrl=index.url;   
-	// 							      model.itemList[i].recentOpenUrl=recentUrl;   
-	// 								  updateRecentlyOpenUrl(model); // for update recently use in local storage 
-	// 							  }
-	// 				      }
-					
-	// 			   }else{
-	// 			              for(i=0;i<model.itemList.length;i++){   
-	// 							  if(parent_url==model.itemList[i].url){
-	// 							      model.itemList[i].recentOpenUrl=href;   
-	// 							  }else if(parent_url!=href){
-	// 							     model.itemList[i].recentOpenUrl="";
-	// 							  }
-	// 					      } 
-	// 					  updateRecentlyOpenUrl(model); // for update recently use in local storage
-	// 			   }
-	// 			});
-				
-	// 			if(is_existq==true){
-	// 			  var storagehtml=createCustomWidget(model);
-	// 			  $("#leftMenuwrp").html(storagehtml);
-	// 			  loadPlusHtml();  // for plus button
-	// 			  return storage.set(wrio.storageKey, model);
-	// 	        }
-	// 		}else{
-	// 		      model.itemList=finalLocalArray;
-	// 			  var storagehtml=createCustomWidget(model);
-	// 			  $("#leftMenuwrp").html(storagehtml);
-	// 			  loadPlusHtml();  // for plus button
-	// 			  return storage.set(wrio.storageKey, model);
-	// 		}
-	// 			 var storagehtml=createCustomWidget(model);
-	// 			 $("#leftMenuwrp").html(storagehtml);
-	// 		    loadPlusHtml();  // for plus button
-	// 			//return model;
- //            }).catch(function (err) {
- //                console.log(err);
- //            }).then(function() {
- //                storage.close();
- //            });
- //        }
- //    };  //  end localStorage
-
-
-//  function for createCustomWidget
+//  function to createCustomWidget
   function createCustomWidget(storage) {
      
 	 var plusWidget = Object.create(HTMLElement.prototype);
@@ -216,7 +137,6 @@ function loadPlusHtml(){
 		
 		// sign '+' markup
         //var $plus = $(importDoc.querySelector('#plus-plus-template').innerHTML);
-		
 		  is_active=false;
 		  var is_activeurl=getParentActiveUrl(href,storage); // for get parent active url 
  		  if(is_activeurl!=undefined){
@@ -249,10 +169,7 @@ function loadPlusHtml(){
 				   var parentStatus="active";
 				}
 				var $parentTab = $('<li/>', {class: 'panel '+parentStatus+' rootNode'+i});
-			    
-			
-				 
-				 
+
 				  if(groupedModel[i].recentOpenUrl!=groupedModel[i].url && groupedModel[i].recentOpenUrl!="" && groupedModel[i].recentOpenUrl!=href ){
 				     var url=groupedModel[i].recentOpenUrl;
 				 }else{
@@ -305,16 +222,13 @@ function loadPlusHtml(){
 				}
 				$accordion.append($parentTab);
 			}
-			 
-				  //alert($accordion.get(0).outerHTML);
-				  //$accordion.append('<li class="new panel"><a class="collapsed" data-toggle="collapse" data-parent="#nav-accordion" href="#"><span class="glyphicon glyphicon-plus"></span></a><div id="element4" class="collapse"></div></li>');
-			//alert($accordion.get(0).outerHTML);
-			return (($accordion.get(0).outerHTML));
+	  
+			return (($accordion[0].outerHTML));
 		  
 	}; // end createCustomWidget
 	   
 	   
-  //  function for groupByAthour
+  //  function to groupByAthour
    function  groupByAthour (loModel) {
 	  if (!loModel) return [];
 		 var parentTabs = getParentTabs(loModel);
@@ -342,7 +256,7 @@ function loadPlusHtml(){
 		return parentTabs.length > 0 ? parentTabs : [];
 	}; //  end groupByAthour
             
-//  function for get parent tab start
+//  function to get parent tab start
 function  getParentTabs (loModel) {
 	var models = [];
 	for (var i = 0; i < loModel.itemList.length; i++) {
@@ -364,7 +278,7 @@ function  getParentTabs (loModel) {
 }; //  end getParentTabs
      
 	        
-//  function for get child tab start
+//  function to get child tab start
 function getChildTabs (loModel) {
 	var models = [];
 	for (var i = 0; i < loModel.itemList.length; i++) {
@@ -374,10 +288,9 @@ function getChildTabs (loModel) {
 	}
 	return models;
 }; // end getChildTabs
-	
-	
-		        
-//  function for get parent active url
+
+
+//  function to get parent active url
 function getParentActiveUrl(url,model) {
      var author;
 	 if (model.itemList && model.itemList.length >0) {
@@ -396,7 +309,7 @@ function getParentActiveUrl(url,model) {
 		
 }; // end check
 
-//  function for get parent active url
+//  function to get parent active url
 function checkParentAvailableInLoCalStorage(url,model) {
 	 var is_author=false;
 	 if (model.itemList && model.itemList.length >0) {
@@ -410,7 +323,7 @@ function checkParentAvailableInLoCalStorage(url,model) {
 }; // end checkParentAvailableInLoCalStorage
 
 
-//  function for count subtab
+//  function to count subtab
  function countSubTabs(model,url) {
 	 var childCount=0;
 	 if (model.itemList && model.itemList.length >0) {
@@ -429,7 +342,7 @@ function checkParentAvailableInLoCalStorage(url,model) {
 }; // end countSubTabs
 
 
-// function for remove 
+// function for removing
 function removeStorage(delete_url,parent_url){ 
 	
 	var storageClient1 = new CrossStorageClient(storageHubPath);
@@ -454,8 +367,7 @@ function removeStorage(delete_url,parent_url){
 
 }
 
-
-//  function for update on Remove
+//  function to update on removing
  function updateonRemove(updatedLocalstorage,parent_url,delete_url) {        
       var storageupdate = new CrossStorageClient(storageHubPath);
         if (typeof CrossStorageClient === 'function'){
@@ -479,7 +391,7 @@ function removeStorage(delete_url,parent_url){
     };  //  end localStorage
 
 
-// function for update recently open url
+// function to update recently opened url
 function updateRecentlyOpenUrl(updatedLocalstorage){
       var storageupdateRecent = new CrossStorageClient(storageHubPath);
         if (typeof CrossStorageClient === 'function'){
@@ -528,19 +440,34 @@ function getLeftHtml(){
 }
 
 
-
-
-return {
+module.exports = {
             color: "blue",
             size: "large",
             updatePlusStorage: function() {
             var wrio = {};
-wrio.storageKey = 'plusLdModel';
-wrio.storageHubUrl = importUrl;
-var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
-var wrioNamespace = window.wrio || {}; 
-var href =window.location.href; 
-var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
+			wrio.storageKey = 'plusLdModel';
+			wrio.storageHubUrl = importUrl;
+			var $accordion = $('<ul class="nav navbar-nav" id="nav-accordion"></ul>');
+			var wrioNamespace = window.wrio || {}; 
+			var href =window.location.href; 
+			if(href!= undefined ){
+			   href = href.replace('index.html', '');  // to remove index.html
+			   href = href.replace('index.htm', '');  // to remove index.htm
+			}
+			if(href!= undefined && href.substr(-1) == '/') {
+				href  = href.substring(0,href.length - 1);   // for remove "/" from string
+			}
+			
+			// for remove # from url
+			if(href!= undefined && href.indexOf("#") != -1){
+			   var hrefArray = href.split("#"); 
+			   href=hrefArray['0']?hrefArray['0']:'';
+			   if(href!= undefined && href.substr(-1) == '/') {
+	              href  = href.substring(0,href.length - 1);  
+               }
+		    }
+			
+	var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/widget/storageHub.htm';
     
         var reactObj1 = this;
 	    var storage = new CrossStorageClient(storageHubPath);
@@ -567,6 +494,7 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 			 var is_existq=false;
 			 var finalLocalArray=getlocalStorageJson(complete_script);
 
+            
 			 if (model.itemList && model.itemList.length>0) {
 					model.itemList.forEach(function (element) {
 					uArray.push(element.url);
@@ -575,7 +503,8 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
 				 }); 
 			 }	
 			
-			 var parent_url=getParentActiveUrl(href,model); // for get parent tab url
+			
+			var parent_url=getParentActiveUrl(href,model); // to get parent tab url
 			if (model.itemList && model.itemList.length >0) {
 			   finalLocalArray.forEach(function (index) {
 				   var is_exist= uArray.indexOf(index.url); 
@@ -638,10 +567,5 @@ var storageHubPath='http://wrio.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App
             });
         }
     
-
             }
-        }
-
-
-
-});
+        };

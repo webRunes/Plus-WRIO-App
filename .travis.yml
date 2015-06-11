@@ -14,7 +14,7 @@ deploy:
     secure: U1SnSfzC8L+66H04IruqD6taOM+UZACCDHp7IaM4MkF7Y62ibv2e1QfLUg1eqsNuELKcpDdSQ5EUPcR8+RgVSVd4KhsUhL2eq3hL3QfUDWc9zfl8f6fQFeIiqhsaIcGPYg1/yQFIRDYyGpMaFMBEUWS4FQ810lOOLRzXcZlJV6Q=
   secret_access_key:
     secure: jS/GixCUB4isSx3Cn+EPlyYq4wP9XKfh4v7j0fZwe2QWFdwVlE8NH8DWuLQOrw6QfBa++qEg58o4mxe8uf446Au/NcKsHtykunfYGI9eV8iPvhFVHOW4SzvMcuwfVyoJPc4TyWawKqoff+bd/TVN5lqmUwtpKBS57reMHWxdD/A=
-  bucket: wrio
+  bucket: wrioos.com
   upload-dir: Plus-WRIO-App
   acl: public_read
   
