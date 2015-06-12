@@ -15,7 +15,8 @@
     ]
   },
   "scripts": {
-    "test": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
+    "build": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
+    "test": "",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d"
   },
   "dependencies": {
