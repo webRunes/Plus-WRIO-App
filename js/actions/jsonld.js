@@ -4,5 +4,5 @@ module.exports = Reflux.createActions([
     'create',
     'read',
     'update',
-    'delete'
+    'del'
 ]);
