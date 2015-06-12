@@ -5,9 +5,12 @@ var React = require('react'),
     actions = require('./actions/jsonld'),
     uuid = require('uuid'),
     activeActions = require('./actions/active'),
-    activeStore = require('./stores/active');
+    activeStore = require('./stores/active'),
+    classNames = require('classnames'),
+    Element = require('./Element'),
+    P = require('./P');
 
- var Plus = React.createClass({
+var Plus = React.createClass({
     mixins: [Reflux.connect(storage, 'jsonld')],
     render: function() {
         if (this.state === null) {
@@ -90,73 +93,6 @@ var SubList = React.createClass({
                         }, this)}
                     </ul>
                 </div>
-            </li>
-        );
-    }
-});
-
-var Element = React.createClass({
-    propTypes: {
-        data: React.PropTypes.object.isRequired,
-        del: React.PropTypes.func.isRequired,
-        listName: React.PropTypes.string.isRequired
-    },
-    getInitialState: function() {
-        return {
-            className: ''
-        };
-    },
-    active: function () {
-        this.uuid = uuid.v1();
-        activeActions.iam({
-            uuid: this.uuid,
-            data: this.props.data,
-            listName: this.props.listName
-        });
-        this.unsubscribe = activeStore.listen(this.deactive);
-        this.setState({
-            className: 'active'
-        });
-    },
-    deactive: function (id) {
-        if (this.uuid === id) {
-            return;
-        }
-        delete this.uuid;
-        this.setState({
-            className: ''
-        });
-        this.unsubscribe();
-    },
-    componentWillUnmount: function() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
-    },
-    render: function() {
-        var o = this.props.data,
-            name = o.name;
-        return (
-            <li className={this.state.className}>
-                <a onClick={this.props.del} className="pull-right">
-                    <span className="glyphicon glyphicon-remove" />
-                </a>
-                <a onClick={this.active}>{name}</a>
-            </li>
-        );
-    }
-});
-
-var P = React.createClass({
-    link: function () {
-        window.location = 'http://wrioos.com';
-    },
-    render: function() {
-        return (
-            <li className="new panel">
-                <a onClick={this.link} className="collapsed">
-                    <span className="glyphicon glyphicon-plus"></span>
-                </a>
             </li>
         );
     }
