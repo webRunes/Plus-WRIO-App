@@ -1,11 +1,13 @@
 var React = require('react'),
     update = require('react/addons/update'),
     Reflux = require('reflux'),
-    storage = require('./storages/jsonld'),
-    actions = require('./actions/jsonld');
+    store = require('./stores/jsonld'),
+    actions = require('./actions/jsonld'),
+    Element = require('./Element'),
+    P = require('./P');
 
- var Plus = React.createClass({
-    mixins: [Reflux.connect(storage, 'jsonld')],
+var Plus = React.createClass({
+    mixins: [Reflux.connect(store, 'jsonld')],
     render: function() {
         if (this.state === null) {
             return null;
@@ -87,44 +89,6 @@ var SubList = React.createClass({
                         }, this)}
                     </ul>
                 </div>
-            </li>
-        );
-    }
-});
-
-var Element = React.createClass({
-    propTypes: {
-        data: React.PropTypes.object.isRequired,
-        del: React.PropTypes.func.isRequired,
-        listName: React.PropTypes.string.isRequired
-    },
-    link: function () {
-        window.location = this.props.data.url;
-    },
-    render: function() {
-        var o = this.props.data,
-            name = o.name;
-        return (
-            <li>
-                <a onClick={this.props.del} className="pull-right">
-                    <span className="glyphicon glyphicon-remove" />
-                </a>
-                <a onClick={this.link}>{name}</a>
-            </li>
-        );
-    }
-});
-
-var P = React.createClass({
-    link: function () {
-        window.location = 'http://wrioos.com';
-    },
-    render: function() {
-        return (
-            <li className="new panel">
-                <a onClick={this.link}>
-                    <span className="glyphicon glyphicon-plus"></span>
-                </a>
             </li>
         );
     }

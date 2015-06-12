@@ -44,10 +44,11 @@ module.exports = Reflux.createStore({
         this.trigger(this.data);
     },
     getHttp: function (url, cb) {
+        var self = this;
         request.get(
             url,
             function (err, result) {
-                if (!err) {
+                if (!err && (typeof result === 'object')) {
                     var e = document.createElement('div');
                     e.innerHTML = result.text;
                     result = Array.prototype.filter.call(e.getElementsByTagName('script'), function (el) {
@@ -56,8 +57,8 @@ module.exports = Reflux.createStore({
                         return JSON.parse(el.textContent);
                     });
                 }
-                cb.call(this, result || []);
-            }.bind(this)
+                cb.call(self, result || []);
+            }
         );
     },
     core: function (jsons) {
