@@ -1,17 +1,13 @@
 var React = require('react'),
     update = require('react/addons/update'),
     Reflux = require('reflux'),
-    storage = require('./stores/jsonld'),
+    store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
-    uuid = require('uuid'),
-    activeActions = require('./actions/active'),
-    activeStore = require('./stores/active'),
-    classNames = require('classnames'),
     Element = require('./Element'),
     P = require('./P');
 
 var Plus = React.createClass({
-    mixins: [Reflux.connect(storage, 'jsonld')],
+    mixins: [Reflux.connect(store, 'jsonld')],
     render: function() {
         if (this.state === null) {
             return null;

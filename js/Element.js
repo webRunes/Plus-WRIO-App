@@ -36,13 +36,22 @@ var Element = React.createClass({
         });
         this.unsubscribe();
     },
+    componentWillUnmount: function() {
+       this.deactive();
+    },
+    del: function () {
+        if (this.state.active) {
+            activeActions.kill(this.uuid);
+        }
+        this.props.del();
+    },
     render: function() {
         var className = classNames({active: this.state.active}),
             o = this.props.data,
             name = o.name;
         return (
             <li className={className}>
-                <a onClick={this.props.del} className="pull-right">
+                <a onClick={this.del} className="pull-right">
                     <span className="glyphicon glyphicon-remove" />
                 </a>
                 <a onClick={this.active}>{name}</a>
