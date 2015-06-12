@@ -6,8 +6,7 @@ var Reflux = require('reflux'),
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (true) ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
-        //var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
+        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
             theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
@@ -34,8 +33,15 @@ module.exports = Reflux.createStore({
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            this.trigger(this.data);
+            if (localStorage.getItem('plus') !== JSON.stringify(this.data)) {
+                this.update();
+            }
         }
+    },
+    update: function () {
+        localStorage.removeItem('plus');
+        localStorage.setItem('plus', JSON.stringify(this.data));
+        this.trigger(this.data);
     },
     getHttp: function (url, cb) {
         request.get(
@@ -86,7 +92,15 @@ module.exports = Reflux.createStore({
         }
     },
     getInitialState: function () {
-        return this.data;
+        return JSON.parse(localStorage.getItem('plus')) || this.data;
+    },
+    onDel: function (listName, index) {
+        if ((index === undefined) || (this.data[listName].length === 1)) {
+            delete this.data[listName];
+        } else {
+            this.data[listName].splice(index, 1);
+        }
+        this.update();
     },
     onRead: function () {
         this.trigger(this.data);

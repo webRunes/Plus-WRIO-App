@@ -10,12 +10,13 @@
   "license": "ISC",
   "browserify": {
     "transform": [
-      "reactify"
+      "reactify",
+      "envify"
     ]
   },
   "scripts": {
     "test": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
-    "watch": "watchify -p browserify-notify -t reactify test/index.js -o test/bundle.js -d"
+    "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d"
   },
   "dependencies": {
     "aws-sdk-apis": "*",
@@ -29,10 +30,14 @@
     "envify": "^3.4.0",
     "express": "4.9.4",
     "express-session": "*",
+    "jsx-loader": "^0.13.2",
     "nconf": "*",
     "passport": "0.2.1",
     "passport-google-oauth": "*",
     "react": "^0.13.3",
+    "react-dom-events": "^0.3.0",
+    "react-event-mixin": "0.0.1",
+    "react-tools": "^0.13.3",
     "reactify": "^1.1.1",
     "reflux": "^0.2.7",
     "superagent": "^1.2.0",
