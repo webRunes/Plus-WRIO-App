@@ -1,1 +1,1 @@
-module.exports = require('./js/plus');
+module.exports = require('./js/Plus');
