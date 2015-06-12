@@ -6,7 +6,7 @@ var Reflux = require('reflux'),
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrio.s3-website-us-east-1.amazonaws.com/',
+        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
             theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
@@ -44,6 +44,7 @@ module.exports = Reflux.createStore({
         this.trigger(this.data);
     },
     getHttp: function (url, cb) {
+        var self = this;
         request.get(
             url,
             function (err, result) {
@@ -56,8 +57,8 @@ module.exports = Reflux.createStore({
                         return JSON.parse(el.textContent);
                     });
                 }
-                cb.call(this, result || []);
-            }.bind(this)
+                cb.call(self, result || []);
+            }
         );
     },
     core: function (jsons) {
