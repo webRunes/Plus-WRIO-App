@@ -13,7 +13,7 @@ module.exports = Reflux.createStore({
     onIam: function (opts) {
         var uuid = opts.uuid,
             data = opts.data;
-        console.log('Active: ' + JSON.stringify(data));
+        window.location = data.url;
         this.trigger(uuid);
     },
     onKill: function () {
