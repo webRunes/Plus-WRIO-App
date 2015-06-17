@@ -11,10 +11,12 @@ module.exports = Reflux.createStore({
         return host + theme + '/widget/defaultList.htm';
     },
     init: function () {
-        this.getHttp(
-            this.getUrl(),
-            this.core
-        );
+        if (!localStorage.getItem('plus')) {
+            this.getHttp(
+                this.getUrl(),
+                this.concatAlljsonld
+            );
+        }
     },
     data: {},
     pending: 0,
@@ -61,11 +63,21 @@ module.exports = Reflux.createStore({
             }
         );
     },
+    concatAlljsonld: function (jsons) {
+        var scripts = document.getElementsByTagName('script'),
+            i;
+        for (i = 0; i < scripts.length; i += 1) {
+            if (scripts[i].type === 'application/ld+json') {
+                jsons.unshift(JSON.parse(scripts[i].textContent));
+            }
+        }
+        this.core(jsons);
+    },
     core: function (jsons) {
         var i, json;
         for (i = 0; i < jsons.length; i += 1) {
             json = jsons[i];
-            if (json.itemListElement) {
+            if (json.itemListElement && json['@type'] === 'ItemList') {
                 this.pending += json.itemListElement.length;
                 json.itemListElement.forEach(function (o) {
                     o = {
@@ -76,11 +88,11 @@ module.exports = Reflux.createStore({
                     var author = o.author;
                     if (author) {
                         this.getHttp(author, function (jsons) {
-                            var i, name;
-                            for (i = 0; i < jsons.length; i += 1) {
-                                if (jsons[i]['@type'] === 'Article') {
+                            var j, name;
+                            for (j = 0; j < jsons.length; i += 1) {
+                                if (jsons[j]['@type'] === 'Article') {
                                     name = jsons[i].name;
-                                    i = jsons.length;
+                                    j = jsons.length;
                                 }
                             }
                             this.onData(o, name);
