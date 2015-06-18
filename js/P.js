@@ -5,7 +5,10 @@ var React = require('react'),
     classNames = require('classnames');
 
 var P = React.createClass({
-    getInitialState: function() {
+    propTypes: {
+        data: React.PropTypes.object.isRequired
+    },
+    getInitialState: function () {
         return {
             active: false
         };
@@ -14,7 +17,7 @@ var P = React.createClass({
         this.uuid = uuid.v1();
         activeActions.iam({
             uuid: this.uuid,
-            data: {name: 'plus'}
+            data: this.props.data
         });
         this.unsubscribe = activeStore.listen(this.deactive);
         this.setState({
@@ -31,7 +34,7 @@ var P = React.createClass({
         });
         this.unsubscribe();
     },
-    render: function() {
+    render: function () {
         var className = classNames('new panel', {active: this.state.active});
         return (
             <li className={className}>
