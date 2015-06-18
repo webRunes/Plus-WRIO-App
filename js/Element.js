@@ -12,7 +12,7 @@ var Element = React.createClass({
     },
     getInitialState: function() {
         return {
-            active: false
+            active: this.props.data ? this.props.data.active : false
         };
     },
     active: function () {

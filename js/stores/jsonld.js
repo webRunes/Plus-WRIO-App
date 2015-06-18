@@ -21,15 +21,20 @@ module.exports = Reflux.createStore({
     pending: 0,
     onData: function (o, name) {
         if (name) {
-            if (this.data[name] === undefined) {
-                console.warn('plus: item with author [' + JSON.stringify(o) + '] do not have parent');
-                this.data[name] = o;
-            } else {
-                if (this.data[name].children === undefined) {
-                    this.data[name].children = {};
-                }
-                this.data[name].children[o.name] = o;
+            if ((o.name === 'Cover') || (name === 'Cover')) {
+                console.warn('Check cover. Cover can have author field? Any item have cover as parent?');
             }
+            if (this.data[name] === undefined) {
+                this.data[name] = {
+                    name: name,
+                    url: o.author,
+                    order: o.order
+                };
+            }
+            if (this.data[name].children === undefined) {
+                this.data[name].children = {};
+            }
+            this.data[name].children[o.name] = o;
         } else {
             if (o.author) {
                 console.warn('plus: author [' + o.author + '] do not have type Article');
@@ -66,13 +71,27 @@ module.exports = Reflux.createStore({
             }
         );
     },
+    setActive: function (json) {
+        if ((json.itemListElement !== undefined) && (json['@type'] === 'ItemList')) {
+            if (json.itemListElement.length > 0) {
+                if (json.itemListElement[0].name !== 'Cover') {
+                    json.itemListElement[0].active = true;
+                }
+            }
+        }
+        return json;
+    },
     concatAlljsonld: function (jsons) {
         var scripts = document.getElementsByTagName('script'),
             i,
             items = [];
         for (i = 0; i < scripts.length; i += 1) {
             if (scripts[i].type === 'application/ld+json') {
-                jsons.unshift(JSON.parse(scripts[i].textContent));
+                jsons.unshift(
+                    this.setActive(
+                        JSON.parse(scripts[i].textContent)
+                    )
+                );
             }
         }
         jsons.forEach(function (json) {
@@ -89,6 +108,7 @@ module.exports = Reflux.createStore({
                 name: o.name,
                 url: o.url,
                 author: o.author,
+                active: o.active,
                 order: o.name === 'Cover' ? 999 : order
             };
             var author = o.author;
