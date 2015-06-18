@@ -1,6 +1,6 @@
 {
   "name": "plus",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "(coming soon)",
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "envify": "^3.4.0",
     "express": "4.9.4",
     "express-session": "*",
+    "lodash.sortby": "^3.1.4",
     "nconf": "*",
     "passport": "0.2.1",
     "passport-google-oauth": "*",
