@@ -89,6 +89,9 @@ var SubList = React.createClass({
         ).map(function (i) {
             var self = this,
                 del = function () {self.del(self.props.listName, i.name); };
+            if (i.active) {
+                //this.toggle();
+            }
             return <Element del={del} onClick={this.toggle} data={i} listName={name} key={i.name} />;
         }, this);
     },
@@ -104,7 +107,7 @@ var SubList = React.createClass({
                 </a>
                 <div className="in" style={this.state.style}>
                     <ul className="nav nav-pills nav-stacked sub">
-                        {this.createElements}
+                        {this.createElements()}
                     </ul>
                 </div>
             </li>
