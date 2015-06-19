@@ -1,7 +1,6 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
-    Actions = require('../actions/jsonld'),
-    _ = require('lodash');
+    Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
     listenables: Actions,
