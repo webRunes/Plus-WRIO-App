@@ -1,6 +1,5 @@
 var React = require('react'),
     update = require('react/addons/update'),
-    Reflux = require('reflux'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     Element = require('./Element'),
@@ -8,7 +7,15 @@ var React = require('react'),
     P = require('./P');
 
 var Plus = React.createClass({
-    mixins: [Reflux.connect(store, 'jsonld')],
+    componentDidMount: function() {
+        store.listen(this.onStateChange);
+        actions.read();
+    },
+    onStateChange: function (jsonld) {
+        this.setState({
+            jsonld: jsonld
+        });
+    },
     render: function() {
         if (this.state === null) {
             return null;
@@ -39,16 +46,17 @@ var List = React.createClass({
         ).map(function (item) {
             if (item.children) {
                 return <SubList data={item} key={item.name} />;
-            } else if (item.name === 'Cover') {
-                return <P data={item} key={item.name} />;
             }
             var self = this,
-                del = function () {self.del(name); };
+                del = function () {
+                    self.del(item.name);
+                };
             return <Element del={del} data={item} listName={item.name} key={item.name} />;
         }, this);
         return (
             <ul id="nav-accordion" className="nav navbar-var">
                 {lis}
+                <P data={{name: 'plus', url: 'http://wrcd'}} />
             </ul>
         );
     }
@@ -88,11 +96,13 @@ var SubList = React.createClass({
             'order'
         ).map(function (i) {
             var self = this,
-                del = function () {self.del(self.props.listName, i.name); };
+                del = function () {
+                    self.del(i.name);
+                };
             if (i.active) {
                 //this.toggle();
             }
-            return <Element del={del} onClick={this.toggle} data={i} listName={name} key={i.name} />;
+            return <Element del={del} data={i} key={i.name} />;
         }, this);
     },
     render: function () {

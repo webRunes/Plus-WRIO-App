@@ -13,17 +13,16 @@ module.exports = Reflux.createStore({
         if (!localStorage.getItem('plus')) {
             this.getHttp(
                 this.getUrl(),
-                this.concatAlljsonld
+                this.filterItemList
             );
         }
     },
     data: {},
     pending: 0,
-    onData: function (o, name) {
+    onData: function (params) {
+        var o = params.tab,
+            name = params.parent;
         if (name) {
-            if ((o.name === 'Cover') || (name === 'Cover')) {
-                console.warn('Check cover. Cover can have author field? Any item have cover as parent?');
-            }
             if (this.data[name] === undefined) {
                 this.data[name] = {
                     name: name,
@@ -48,10 +47,66 @@ module.exports = Reflux.createStore({
             }
         }
     },
+    lastOrder: function (x) {
+        var keys = Object.keys(x),
+            max = (keys.length === 0) ? 0 : x[keys[0]].order,
+            i;
+        for (i = 1; i < keys.length; i += 1) {
+            var order = x[keys[i]].order;
+            if (order > max) {
+                max = order;
+            }
+        }
+        return max;
+    },
+    onDataActive: function (params) {
+        var o = params.tab,
+            name = params.parent;
+        o.active = true;
+        if (name) {
+            if (this.data[name] === undefined) {
+                this.data[name] = {
+                    name: name,
+                    url: o.author,
+                    order: this.lastOrder(this.data) + 1
+                };
+            }
+            this.data[name].active = true;
+            if (this.data[name].children === undefined) {
+                this.data[name].children = {};
+            }
+            var children = this.data[name].children;
+            if (children[o.name]) {
+                children[o.name].active = true;
+            } else {
+                children[o.name] = {
+                    name: o.name,
+                    url: o.url,
+                    active: true,
+                    order: this.lastOrder(children)
+                };
+            }
+        } else {
+            if (o.author) {
+                console.warn('plus: author [' + o.author + '] do not have type Article');
+            }
+            if (this.data[o.name]) {
+                this.data[o.name].active = true;
+            } else {
+                this.data[o.name] = {
+                    name: o.name,
+                    url: o.url,
+                    active: true,
+                    order: this.lastOrder(this.data)
+                };
+            }
+        }
+        this.update();
+        this.trigger(this.data);
+    },
     update: function () {
         localStorage.removeItem('plus');
         localStorage.setItem('plus', JSON.stringify(this.data));
-        this.trigger(this.data);
     },
     getHttp: function (url, cb) {
         var self = this;
@@ -71,35 +126,67 @@ module.exports = Reflux.createStore({
             }
         );
     },
-    setActive: function (json) {
-        if ((json.itemListElement !== undefined) && (json['@type'] === 'ItemList')) {
-            if (json.itemListElement.length > 0) {
-                if (json.itemListElement[0].name !== 'Cover') {
-                    json.itemListElement[0].active = true;
+    addCurrentPage: function () {
+        var scripts = document.getElementsByTagName('script'),
+            i,
+            json,
+            o;
+        for (i = 0; i < scripts.length; i += 1) {
+            if (scripts[i].type === 'application/ld+json') {
+                json = JSON.parse(scripts[i].textContent);
+                if (json['@type'] === 'Article') {
+                    o = {
+                        name: json.name,
+                        url: window.location.href,
+                        author: json.author,
+                        active: true
+                    };
+                    break;
                 }
             }
         }
-        return json;
-    },
-    concatAlljsonld: function (jsons) {
-        var scripts = document.getElementsByTagName('script'),
-            i,
-            items = [];
-        for (i = 0; i < scripts.length; i += 1) {
-            if (scripts[i].type === 'application/ld+json') {
-                jsons.unshift(
-                    this.setActive(
-                        JSON.parse(scripts[i].textContent)
-                    )
-                );
+        if (o) {
+            this.removeLastActive(this.data);
+            if (o.author) {
+                this.getHttp(o.author, function (jsons) {
+                    var j, name;
+                    for (j = 0; j < jsons.length; j += 1) {
+                        if (jsons[j]['@type'] === 'Article') {
+                            name = jsons[j].name;
+                            j = jsons.length;
+                        }
+                    }
+                    this.onDataActive({
+                        tab: o,
+                        parent: name
+                    });
+                }.bind(this));
+            } else {
+                this.onDataActive({
+                    tab: o
+                });
             }
         }
+    },
+    removeLastActive: function (obj) {
+        Object.keys(obj).forEach(function (key) {
+            var o = obj[key];
+            if (o.active !== undefined) {
+                delete o.active;
+            }
+            if (o.children) {
+                this.removeLastActive(o.children);
+            }
+        }, this);
+    },
+    filterItemList: function (jsons) {
+        var items = [];
         jsons.forEach(function (json) {
             if ((json.itemListElement !== undefined) && (json['@type'] === 'ItemList')) {
                 items = items.concat(json.itemListElement);
             }
         });
-        this.pending += items.length;
+        this.pending += items.length + 1;
         this.core(items);
     },
     core: function (items) {
@@ -108,8 +195,7 @@ module.exports = Reflux.createStore({
                 name: o.name,
                 url: o.url,
                 author: o.author,
-                active: o.active,
-                order: o.name === 'Cover' ? 999 : order
+                order: order
             };
             var author = o.author;
             if (author) {
@@ -121,25 +207,50 @@ module.exports = Reflux.createStore({
                             j = jsons.length;
                         }
                     }
-                    this.onData(o, name);
+                    this.onData({
+                        tab: o,
+                        parent: name
+                    });
                 }.bind(this));
             } else {
-                this.onData(o);
+                this.onData({
+                    tab: o
+                });
             }
         }, this);
     },
     getInitialState: function () {
-        return JSON.parse(localStorage.getItem('plus')) || this.data;
+        return this.data;
     },
     onDel: function (listName, elName) {
         if (elName === undefined) {
             delete this.data[listName];
         } else {
-            delete this.data[listName].chidren[elName];
+            delete this.data[listName].children[elName];
         }
         this.update();
+        this.trigger(this.data);
+    },
+    haveData: function () {
+        return (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
     },
     onRead: function () {
-        this.trigger(this.data);
+        if (this.haveData && (this.pending !== 0)) {
+            this.addCurrentPage();
+        } else {
+            this.data = JSON.parse(localStorage.getItem('plus')) || {};
+            if (this.haveData) {
+                this.addCurrentPage();
+            } else if (this.pending !== 0) {
+                var self = this,
+                    i;
+                i = setInterval(function () {
+                    if (self.pending === 0) {
+                        clearInterval(i);
+                        this.addCurrentPage();
+                    }
+                }, 100);
+            }
+        }
     }
 });
