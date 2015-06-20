@@ -108,12 +108,12 @@ var SubList = React.createClass({
     render: function () {
         var o = this.props.data,
             name = o.name,
-            countChildren = o.children ? o.children.length : 'closed';
+            rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
             <li className="panel">
-                <a onClick={this.gotoUrl}>
-                    <span className="qty pull-right">{countChildren}</span>
-                    <span>{name}</span>
+                <a>
+                    <span className="qty pull-right">{rightContent}</span>
+                    <span onClick={this.gotoUrl}>{name}</span>
                 </a>
                 <div className="in" style={this.state.style}>
                     <ul className="nav nav-pills nav-stacked sub">

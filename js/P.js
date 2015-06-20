@@ -38,7 +38,7 @@ var P = React.createClass({
         var className = classNames('new panel', {active: this.state.active});
         return (
             <li className={className}>
-                <a onClick={this.active} className="collapsed">
+                <a onClick={this.active} style={{width: '100%'}} className="collapsed">
                     <span className="glyphicon glyphicon-plus"></span>
                 </a>
             </li>
