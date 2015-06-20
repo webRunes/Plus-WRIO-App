@@ -101,8 +101,6 @@ module.exports = Reflux.createStore({
                 };
             }
         }
-        this.update();
-        this.trigger(this.data);
     },
     update: function () {
         localStorage.removeItem('plus');
@@ -119,54 +117,30 @@ module.exports = Reflux.createStore({
                     result = Array.prototype.filter.call(e.getElementsByTagName('script'), function (el) {
                         return el.type === 'application/ld+json';
                     }).map(function (el) {
-                        return JSON.parse(el.textContent);
+                        var json;
+                        try {
+                            json = JSON.parse(el.textContent);
+                        } catch (exception) {
+                            console.error('Requested json-ld from ' + url + ' not valid: ' + exception);
+                        }
+                        return json;
+                    }).filter(function (json) {
+                        return typeof json === 'object';
                     });
                 }
                 cb.call(self, result || []);
             }
         );
     },
-    addCurrentPage: function () {
-        var scripts = document.getElementsByTagName('script'),
-            i,
-            json,
-            o;
-        for (i = 0; i < scripts.length; i += 1) {
-            if (scripts[i].type === 'application/ld+json') {
-                json = JSON.parse(scripts[i].textContent);
-                if (json['@type'] === 'Article') {
-                    o = {
-                        name: json.name,
-                        url: window.location.href,
-                        author: json.author,
-                        active: true
-                    };
-                    break;
-                }
+    merge: function () {
+        this.removeLastActive(this.data);
+        this.addCurrentPage(function (params) {
+            if (params) {
+                this.onDataActive(params);
             }
-        }
-        if (o) {
-            this.removeLastActive(this.data);
-            if (o.author) {
-                this.getHttp(o.author, function (jsons) {
-                    var j, name;
-                    for (j = 0; j < jsons.length; j += 1) {
-                        if (jsons[j]['@type'] === 'Article') {
-                            name = jsons[j].name;
-                            j = jsons.length;
-                        }
-                    }
-                    this.onDataActive({
-                        tab: o,
-                        parent: name
-                    });
-                }.bind(this));
-            } else {
-                this.onDataActive({
-                    tab: o
-                });
-            }
-        }
+            this.update();
+            this.trigger(this.data);
+        });
     },
     removeLastActive: function (obj) {
         Object.keys(obj).forEach(function (key) {
@@ -178,6 +152,55 @@ module.exports = Reflux.createStore({
                 this.removeLastActive(o.children);
             }
         }, this);
+    },
+    addCurrentPage: function (cb) {
+        var scripts = document.getElementsByTagName('script'),
+            i,
+            json,
+            o;
+        for (i = 0; i < scripts.length; i += 1) {
+            if (scripts[i].type === 'application/ld+json') {
+                json = undefined;
+                try {
+                    json = JSON.parse(scripts[i].textContent);
+                } catch (exception) {
+                    json = undefined;
+                    console.error('Your json-ld not valid: ' + exception);
+                }
+                if ((typeof json === 'object') && (json['@type'] === 'Article')) {
+                    o = {
+                        name: json.name,
+                        url: window.location.href,
+                        author: json.author,
+                        active: true
+                    };
+                    break;
+                }
+            }
+        }
+        if (o) {
+            if (o.author) {
+                this.getHttp(o.author, function (jsons) {
+                    var j, name;
+                    for (j = 0; j < jsons.length; j += 1) {
+                        if (jsons[j]['@type'] === 'Article') {
+                            name = jsons[j].name;
+                            j = jsons.length;
+                        }
+                    }
+                    cb.call(this, {
+                        tab: o,
+                        parent: name
+                    });
+                }.bind(this));
+            } else {
+                cb.call(this, {
+                    tab: o
+                });
+            }
+        } else {
+            cb.call(this);
+        }
     },
     filterItemList: function (jsons) {
         var items = [];
@@ -227,6 +250,9 @@ module.exports = Reflux.createStore({
             delete this.data[listName];
         } else {
             delete this.data[listName].children[elName];
+            if (Object.keys(this.data[listName].children).length === 0) {
+                delete this.data[listName].children;
+            }
         }
         this.update();
         this.trigger(this.data);
@@ -236,18 +262,18 @@ module.exports = Reflux.createStore({
     },
     onRead: function () {
         if (this.haveData && (this.pending !== 0)) {
-            this.addCurrentPage();
+            this.merge();
         } else {
             this.data = JSON.parse(localStorage.getItem('plus')) || {};
             if (this.haveData) {
-                this.addCurrentPage();
+                this.merge();
             } else if (this.pending !== 0) {
                 var self = this,
                     i;
                 i = setInterval(function () {
                     if (self.pending === 0) {
                         clearInterval(i);
-                        this.addCurrentPage();
+                        this.merge();
                     }
                 }, 100);
             }
