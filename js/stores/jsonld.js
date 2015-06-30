@@ -1,16 +1,18 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
+    host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
+    CrossStorageClient = require('cross-storage').CrossStorageClient,
+    storage = new CrossStorageClient(host + '/Plus-WRIO-App/widget/storageHub.htm'),
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
-            theme = 'Default-WRIO-Theme';
+        var theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
     init: function () {
-        if (!localStorage.getItem('plus')) {
+        if (!storage.get('plus')) {
             this.getHttp(
                 this.getUrl(),
                 this.filterItemList
@@ -42,7 +44,7 @@ module.exports = Reflux.createStore({
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            if (localStorage.getItem('plus') !== JSON.stringify(this.data)) {
+            if (JSON.stringify(storage.get('plus')) !== JSON.stringify(this.data)) {
                 this.update();
             }
         }
@@ -103,8 +105,8 @@ module.exports = Reflux.createStore({
         }
     },
     update: function () {
-        localStorage.removeItem('plus');
-        localStorage.setItem('plus', JSON.stringify(this.data));
+        storage.del('plus');
+        storage.set('plus', this.data);
     },
     getHttp: function (url, cb) {
         var self = this;
@@ -264,7 +266,7 @@ module.exports = Reflux.createStore({
         if (this.haveData && (this.pending !== 0)) {
             this.merge();
         } else {
-            this.data = JSON.parse(localStorage.getItem('plus')) || {};
+            this.data = storage.get('plus') || {};
             if (this.haveData) {
                 this.merge();
             } else if (this.pending !== 0) {

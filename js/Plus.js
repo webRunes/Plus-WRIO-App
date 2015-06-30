@@ -7,9 +7,12 @@ var React = require('react'),
     P = require('./P');
 
 var Plus = React.createClass({
-    componentDidMount: function() {
-        store.listen(this.onStateChange);
+    componentDidMount: function () {
+        this.unsubscribe = store.listen(this.onStateChange);
         actions.read();
+    },
+    componentWillUnmount: function () {
+        this.unsubscribe();
     },
     onStateChange: function (jsonld) {
         this.setState({
