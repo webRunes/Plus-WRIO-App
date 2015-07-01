@@ -1,21 +1,31 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
+    host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
+    CrossStorageClient = require('cross-storage').CrossStorageClient,
+    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
+    storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
+        promise: Promise
+    }),
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
-            theme = 'Default-WRIO-Theme';
+        var theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
     init: function () {
-        if (!localStorage.getItem('plus')) {
-            this.getHttp(
-                this.getUrl(),
-                this.filterItemList
-            );
-        }
+        storage.onConnect().then(function () {
+            return storage.get('plus');
+        }).then(function (res) {
+            this.data = res || {};
+            if (!this.haveData()) {
+                this.getHttp(
+                    this.getUrl(),
+                    this.filterItemList
+                );
+            }
+        }.bind(this));
     },
     data: {},
     pending: 0,
@@ -42,9 +52,13 @@ module.exports = Reflux.createStore({
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            if (localStorage.getItem('plus') !== JSON.stringify(this.data)) {
-                this.update();
-            }
+            storage.onConnect().then(function () {
+                return storage.get('plus');
+            }).then(function (res) {
+                if (JSON.stringify(res) !== JSON.stringify(this.data)) {
+                    this.update();
+                }
+            }.bind(this));
         }
     },
     lastOrder: function (x) {
@@ -103,8 +117,10 @@ module.exports = Reflux.createStore({
         }
     },
     update: function () {
-        localStorage.removeItem('plus');
-        localStorage.setItem('plus', JSON.stringify(this.data));
+        storage.onConnect().then(function () {
+            storage.del('plus');
+            storage.set('plus', this.data);
+        }.bind(this));
     },
     getHttp: function (url, cb) {
         var self = this;
@@ -258,25 +274,27 @@ module.exports = Reflux.createStore({
         this.trigger(this.data);
     },
     haveData: function () {
-        return (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
+        return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
     },
     onRead: function () {
-        if (this.haveData && (this.pending !== 0)) {
+        if (this.haveData() && (this.pending !== 0)) {
             this.merge();
         } else {
-            this.data = JSON.parse(localStorage.getItem('plus')) || {};
-            if (this.haveData) {
-                this.merge();
-            } else if (this.pending !== 0) {
-                var self = this,
-                    i;
-                i = setInterval(function () {
-                    if (self.pending === 0) {
-                        clearInterval(i);
-                        this.merge();
-                    }
-                }, 100);
-            }
+            storage.onConnect().then(function () {
+                return storage.get('plus');
+            }).then(function (res) {
+                this.data = res || {};
+                if (this.haveData()) {
+                    this.merge();
+                } else {
+                    var i = setInterval(function () {
+                        if (this.haveData()) {
+                            clearInterval(i);
+                            this.merge();
+                        }
+                    }.bind(this), 100);
+                }
+            }.bind(this));
         }
     }
 });
