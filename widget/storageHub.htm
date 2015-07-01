@@ -3,11 +3,10 @@
     <title>Cross Storage Hub</title>
 </head>
 <body>
-    <script src="http://localhost:3000/Plus-WRIO-App/js/hub.min.js"></script>
+    <script src="http://wrioos.com.s3-website-us-east-1.amazonaws.com/Plus-WRIO-App/js/hub.min.js"></script>
     <script>
     window.CrossStorageHub.init([{
-        origin: /.*localhost:300\d$/,
-        //origin: /.*/,
+        origin: /.*/,
         allow: ['get', 'set', 'del']
     }]);
     </script>

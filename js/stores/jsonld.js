@@ -2,8 +2,9 @@ var Reflux = require('reflux'),
     request = require('superagent'),
     host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
+    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
     storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
-        promise: require('bluebird')
+        promise: Promise
     }),
     Actions = require('../actions/jsonld');
 
@@ -17,7 +18,7 @@ module.exports = Reflux.createStore({
         storage.onConnect().then(function () {
             return storage.get('plus');
         }).then(function (res) {
-            this.data = res;
+            this.data = res || {};
             if (!this.haveData()) {
                 this.getHttp(
                     this.getUrl(),
@@ -51,9 +52,13 @@ module.exports = Reflux.createStore({
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            if (JSON.stringify(storage.get('plus')) !== JSON.stringify(this.data)) {
-                this.update();
-            }
+            storage.onConnect().then(function () {
+                return storage.get('plus');
+            }).then(function (res) {
+                if (JSON.stringify(res) !== JSON.stringify(this.data)) {
+                    this.update();
+                }
+            }.bind(this));
         }
     },
     lastOrder: function (x) {
@@ -112,7 +117,7 @@ module.exports = Reflux.createStore({
         }
     },
     update: function () {
-        storage.onConnect().then(function() {
+        storage.onConnect().then(function () {
             storage.del('plus');
             storage.set('plus', this.data);
         }.bind(this));
@@ -269,7 +274,7 @@ module.exports = Reflux.createStore({
         this.trigger(this.data);
     },
     haveData: function () {
-        return (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
+        return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
     },
     onRead: function () {
         if (this.haveData() && (this.pending !== 0)) {
@@ -278,7 +283,7 @@ module.exports = Reflux.createStore({
             storage.onConnect().then(function () {
                 return storage.get('plus');
             }).then(function (res) {
-                this.data = res;
+                this.data = res || {};
                 if (this.haveData()) {
                     this.merge();
                 } else {
