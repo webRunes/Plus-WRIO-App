@@ -72,7 +72,7 @@ var SubList = React.createClass({
     getInitialState: function() {
         return {
             style: {
-                height: 'auto',
+                height: '0px',
                 overflow: 'hidden'
             }
         };
@@ -103,7 +103,7 @@ var SubList = React.createClass({
                     self.del(i.name);
                 };
             if (i.active) {
-                //this.toggle();
+                this.toggle();
             }
             return <Element del={del} data={i} key={i.name} />;
         }, this);
