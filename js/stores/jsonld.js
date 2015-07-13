@@ -225,7 +225,7 @@ module.exports = Reflux.createStore({
                 items = items.concat(json.itemListElement);
             }
         });
-        this.pending += items.length + 1;
+        this.pending += items.length;
         this.core(items);
     },
     core: function (items) {
@@ -277,24 +277,15 @@ module.exports = Reflux.createStore({
         return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
     },
     onRead: function () {
-        if (this.haveData() && (this.pending !== 0)) {
+        if (this.haveData() && (this.pending === 0)) {
             this.merge();
         } else {
-            storage.onConnect().then(function () {
-                return storage.get('plus');
-            }).then(function (res) {
-                this.data = res || {};
-                if (this.haveData()) {
+            var i = setInterval(function () {
+                if (this.haveData() && (this.pending === 0)) {
+                    clearInterval(i);
                     this.merge();
-                } else {
-                    var i = setInterval(function () {
-                        if (this.haveData()) {
-                            clearInterval(i);
-                            this.merge();
-                        }
-                    }.bind(this), 100);
                 }
-            }.bind(this));
+            }.bind(this), 100);
         }
     }
 });

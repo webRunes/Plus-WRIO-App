@@ -24,7 +24,7 @@ var Plus = React.createClass({
             return null;
         }
         return (
-            <div className="navbar-collapse in">
+            <div className="navbar-collapse in unselectable" unselectable="on">
                 <div className="navbar-header" id="leftMenuwrp">
                     <List data={this.state.jsonld} />
                 </div>
