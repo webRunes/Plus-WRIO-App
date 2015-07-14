@@ -72,17 +72,10 @@ var SubList = React.createClass({
     getInitialState: function() {
         return {
             style: {
-                height: '0px',
+                height: (this.props.data.active) ? 'auto' : '0px',
                 overflow: 'hidden'
             }
         };
-    },
-    toggle: function () {
-        this.setState(update(this.state, {
-            style: {
-                height: {$set: (this.state.style.height === 'auto') ? '0px' : 'auto'}
-            }
-        }));
     },
     gotoUrl: function () {
         window.location = this.props.data.url;
@@ -103,7 +96,7 @@ var SubList = React.createClass({
                     self.del(i.name);
                 };
             if (i.active) {
-                this.toggle();
+                this.style = {height: 'auto', overflow: 'hidden'};
             }
             return <Element del={del} data={i} key={i.name} />;
         }, this);
@@ -111,6 +104,7 @@ var SubList = React.createClass({
     render: function () {
         var o = this.props.data,
             name = o.name,
+            lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
             <li className="panel">
@@ -118,9 +112,9 @@ var SubList = React.createClass({
                     <span className="qty pull-right">{rightContent}</span>
                     <span onClick={this.gotoUrl}>{name}</span>
                 </a>
-                <div className="in" style={this.state.style}>
+                <div className="in" style={this.style}>
                     <ul className="nav nav-pills nav-stacked sub">
-                        {this.createElements()}
+                        {lis}
                     </ul>
                 </div>
             </li>
