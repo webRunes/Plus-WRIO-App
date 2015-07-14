@@ -97,7 +97,7 @@ var SubList = React.createClass({
         }, this);
     },
     render: function () {
-        this.style.height = this.props.data.active ? 'auto' : '0px',
+        this.style.height = this.props.data.active ? 'auto' : '0px';
         var o = this.props.data,
             name = o.name,
             lis = this.createElements(),
