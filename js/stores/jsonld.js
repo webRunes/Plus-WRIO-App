@@ -1,5 +1,6 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
+    sortBy = require('lodash.sortby'),
     host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
     Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
@@ -76,7 +77,6 @@ module.exports = Reflux.createStore({
     onDataActive: function (params) {
         var o = params.tab,
             name = params.parent;
-        o.active = true;
         if (name) {
             if (this.data[name] === undefined) {
                 this.data[name] = {
@@ -85,7 +85,6 @@ module.exports = Reflux.createStore({
                     order: this.lastOrder(this.data) + 1
                 };
             }
-            this.data[name].active = true;
             if (this.data[name].children === undefined) {
                 this.data[name].children = {};
             }
@@ -93,12 +92,8 @@ module.exports = Reflux.createStore({
             if (children[o.name]) {
                 children[o.name].active = true;
             } else {
-                children[o.name] = {
-                    name: o.name,
-                    url: o.url,
-                    active: true,
-                    order: this.lastOrder(children)
-                };
+                children[o.name] = o;
+                children[o.name].order = this.lastOrder(children);
             }
         } else {
             if (o.author) {
@@ -107,20 +102,18 @@ module.exports = Reflux.createStore({
             if (this.data[o.name]) {
                 this.data[o.name].active = true;
             } else {
-                this.data[o.name] = {
-                    name: o.name,
-                    url: o.url,
-                    active: true,
-                    order: this.lastOrder(this.data)
-                };
+                this.data[o.name] = o;
+                this.data[o.name].order = this.lastOrder(this.data);
             }
         }
     },
-    update: function () {
-        storage.onConnect().then(function () {
-            storage.del('plus');
-            storage.set('plus', this.data);
-        }.bind(this));
+    update: function (cb) {
+        storage.onConnect()
+            .then(function () {
+                storage.del('plus');
+                storage.set('plus', this.data);
+            }.bind(this))
+            .then(cb);
     },
     getHttp: function (url, cb) {
         var self = this;
@@ -262,16 +255,50 @@ module.exports = Reflux.createStore({
         return this.data;
     },
     onDel: function (listName, elName) {
+        var next;
         if (elName === undefined) {
+            next = this.getNext(this.data, listName);
             delete this.data[listName];
         } else {
+            next = this.getNext(this.data[listName].children, elName);
             delete this.data[listName].children[elName];
             if (Object.keys(this.data[listName].children).length === 0) {
                 delete this.data[listName].children;
+                this.data[listName].active = true;
             }
         }
-        this.update();
-        this.trigger(this.data);
+        this.update(function () {
+            if (next) {
+                window.location = next;
+            } else {
+                this.trigger(this.data);
+            }
+        }.bind(this));
+        
+    },
+    getNext: function (obj, key) {
+        if (!obj[key].active) {
+            return;
+        }
+        var children = sortBy(
+            Object.keys(obj).map(function (name) {
+                return obj[name];
+            }),
+            'order'
+        ),
+            i,
+            child,
+            next;
+        for (i = 0; i < children.length; i += 1) {
+            child = children[i];
+            if (child.name === key) {
+                break;
+            }
+        }
+        next = children[i - 1] || children[i + 1];
+        if (next) {
+            return next.url;
+        }
     },
     haveData: function () {
         return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
