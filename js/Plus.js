@@ -69,13 +69,9 @@ var SubList = React.createClass({
     propTypes: {
         data: React.PropTypes.object.isRequired
     },
-    getInitialState: function() {
-        return {
-            style: {
-                height: (this.props.data.active) ? 'auto' : '0px',
-                overflow: 'hidden'
-            }
-        };
+    style: {
+        height: '0px',
+        overflow: 'hidden'
     },
     gotoUrl: function () {
         window.location = this.props.data.url;
@@ -96,7 +92,7 @@ var SubList = React.createClass({
                     self.del(i.name);
                 };
             if (i.active) {
-                this.style = {height: 'auto', overflow: 'hidden'};
+                this.style.height = 'auto';
             }
             return <Element del={del} data={i} key={i.name} />;
         }, this);
