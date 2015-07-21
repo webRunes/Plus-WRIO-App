@@ -1,5 +1,4 @@
 var React = require('react'),
-    update = require('react/addons/update'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     Element = require('./Element'),
@@ -7,9 +6,12 @@ var React = require('react'),
     P = require('./P');
 
 var Plus = React.createClass({
-    componentDidMount: function() {
-        store.listen(this.onStateChange);
+    componentDidMount: function () {
+        this.unsubscribe = store.listen(this.onStateChange);
         actions.read();
+    },
+    componentWillUnmount: function () {
+        this.unsubscribe();
     },
     onStateChange: function (jsonld) {
         this.setState({
@@ -21,7 +23,7 @@ var Plus = React.createClass({
             return null;
         }
         return (
-            <div className="navbar-collapse in">
+            <div className="navbar-collapse in unselectable" unselectable="on">
                 <div className="navbar-header" id="leftMenuwrp">
                     <List data={this.state.jsonld} />
                 </div>
@@ -34,9 +36,6 @@ var List = React.createClass({
     propTypes: {
         data: React.PropTypes.object.isRequired
     },
-    del: function (listName) {
-        actions.del(listName);
-    },
     render: function() {
         var lis = sortBy(
             Object.keys(this.props.data).map(function (name) {
@@ -45,13 +44,12 @@ var List = React.createClass({
             'order'
         ).map(function (item) {
             if (item.children) {
-                return <SubList data={item} key={item.name} />;
+                return <SubList data={item} key={item.url} />;
             }
-            var self = this,
-                del = function () {
-                    self.del(item.name);
-                };
-            return <Element del={del} data={item} listName={item.name} key={item.name} />;
+            var del = function () {
+                actions.del(item.url);
+            };
+            return <Element del={del} data={item} listName={item.name} key={item.url} />;
         }, this);
         return (
             <ul id="nav-accordion" className="nav navbar-var">
@@ -66,26 +64,11 @@ var SubList = React.createClass({
     propTypes: {
         data: React.PropTypes.object.isRequired
     },
-    getInitialState: function() {
-        return {
-            style: {
-                height: 'auto',
-                overflow: 'hidden'
-            }
-        };
-    },
-    toggle: function () {
-        this.setState(update(this.state, {
-            style: {
-                height: {$set: (this.state.style.height === 'auto') ? '0px' : 'auto'}
-            }
-        }));
+    style: {
+        overflow: 'hidden'
     },
     gotoUrl: function () {
         window.location = this.props.data.url;
-    },
-    del: function (elName) {
-        actions.del(this.props.data.name, elName);
     },
     createElements: function () {
         var children = this.props.data.children;
@@ -95,19 +78,21 @@ var SubList = React.createClass({
             }),
             'order'
         ).map(function (i) {
-            var self = this,
+            var list = this.props.data.url,
                 del = function () {
-                    self.del(i.name);
+                    actions.del(list, i.url);
                 };
             if (i.active) {
-                //this.toggle();
+                this.style.height = 'auto';
             }
-            return <Element del={del} data={i} key={i.name} />;
+            return <Element del={del} data={i} key={i.url} />;
         }, this);
     },
     render: function () {
+        this.style.height = this.props.data.active ? 'auto' : '0px';
         var o = this.props.data,
             name = o.name,
+            lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
             <li className="panel">
@@ -115,9 +100,9 @@ var SubList = React.createClass({
                     <span className="qty pull-right">{rightContent}</span>
                     <span onClick={this.gotoUrl}>{name}</span>
                 </a>
-                <div className="in" style={this.state.style}>
+                <div className="in" style={this.style}>
                     <ul className="nav nav-pills nav-stacked sub">
-                        {this.createElements()}
+                        {lis}
                     </ul>
                 </div>
             </li>

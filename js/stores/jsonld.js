@@ -1,110 +1,114 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
+    host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
+    CrossStorageClient = require('cross-storage').CrossStorageClient,
+    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
+    storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
+        promise: Promise
+    }),
+    lastOrder = require('./tools').lastOrder,
+    getNext = require('./tools').getNext,
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
     listenables: Actions,
     getUrl: function () {
-        var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
-            theme = 'Default-WRIO-Theme';
+        var theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
     init: function () {
-        if (!localStorage.getItem('plus')) {
-            this.getHttp(
-                this.getUrl(),
-                this.filterItemList
-            );
-        }
+        storage.onConnect().then(function () {
+            return storage.get('plus');
+        }).then(function (res) {
+            this.data = res || {};
+            if (!this.haveData()) {
+                this.getHttp(
+                    this.getUrl(),
+                    this.filterItemList
+                );
+            }
+        }.bind(this));
     },
     data: {},
     pending: 0,
     onData: function (params) {
         var o = params.tab,
-            name = params.parent;
-        if (name) {
-            if (this.data[name] === undefined) {
-                this.data[name] = {
-                    name: name,
-                    url: o.author,
+            parentName = params.parent,
+            key;
+        if (parentName) {
+            key = o.author;
+            if (this.data[key] === undefined) {
+                this.data[key] = {
+                    name: parentName,
+                    url: key,
                     order: o.order
                 };
             }
-            if (this.data[name].children === undefined) {
-                this.data[name].children = {};
+            if (this.data[key].children === undefined) {
+                this.data[key].children = {};
             }
-            this.data[name].children[o.name] = o;
+            this.data[key].children[o.url] = o;
         } else {
             if (o.author) {
                 console.warn('plus: author [' + o.author + '] do not have type Article');
             }
-            this.data[o.name] = o;
+            key = o.url;
+            this.data[key] = o;
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            if (localStorage.getItem('plus') !== JSON.stringify(this.data)) {
-                this.update();
-            }
+            storage.onConnect().then(function () {
+                return storage.get('plus');
+            }).then(function (res) {
+                if (JSON.stringify(res) !== JSON.stringify(this.data)) {
+                    this.update();
+                }
+            }.bind(this));
         }
-    },
-    lastOrder: function (x) {
-        var keys = Object.keys(x),
-            max = (keys.length === 0) ? 0 : x[keys[0]].order,
-            i;
-        for (i = 1; i < keys.length; i += 1) {
-            var order = x[keys[i]].order;
-            if (order > max) {
-                max = order;
-            }
-        }
-        return max;
     },
     onDataActive: function (params) {
         var o = params.tab,
-            name = params.parent;
-        o.active = true;
-        if (name) {
-            if (this.data[name] === undefined) {
-                this.data[name] = {
-                    name: name,
-                    url: o.author,
-                    order: this.lastOrder(this.data) + 1
+            parentName = params.parent,
+            key;
+        if (o.author) {
+            //check parent
+            key = o.author;
+            if (this.data[key] === undefined) {
+                this.data[key] = {
+                    name: parentName,
+                    url: key,
+                    order: lastOrder(this.data) + 1
                 };
             }
-            this.data[name].active = true;
-            if (this.data[name].children === undefined) {
-                this.data[name].children = {};
+            if (this.data[key].children === undefined) {
+                this.data[key].children = {};
             }
-            var children = this.data[name].children;
-            if (children[o.name]) {
-                children[o.name].active = true;
+            var children = this.data[key].children;
+            //update child
+            key = o.url;
+            if (children[key]) {
+                children[key].active = true;
             } else {
-                children[o.name] = {
-                    name: o.name,
-                    url: o.url,
-                    active: true,
-                    order: this.lastOrder(children)
-                };
+                children[key] = o;
+                children[key].order = lastOrder(children);
             }
         } else {
-            if (o.author) {
-                console.warn('plus: author [' + o.author + '] do not have type Article');
-            }
-            if (this.data[o.name]) {
-                this.data[o.name].active = true;
+            key = o.url;
+            if (this.data[key]) {
+                this.data[key].active = true;
             } else {
-                this.data[o.name] = {
-                    name: o.name,
-                    url: o.url,
-                    active: true,
-                    order: this.lastOrder(this.data)
-                };
+                this.data[key] = o;
+                this.data[key].order = lastOrder(this.data);
             }
         }
     },
-    update: function () {
-        localStorage.removeItem('plus');
-        localStorage.setItem('plus', JSON.stringify(this.data));
+    update: function (cb) {
+        storage.onConnect()
+            .then(function () {
+                storage.del('plus');
+                storage.set('plus', this.data);
+            }.bind(this))
+            .then(cb);
     },
     getHttp: function (url, cb) {
         var self = this;
@@ -179,7 +183,7 @@ module.exports = Reflux.createStore({
             }
         }
         if (o) {
-            if (o.author) {
+            if (!this.data[o.author]) {
                 this.getHttp(o.author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
@@ -187,6 +191,9 @@ module.exports = Reflux.createStore({
                             name = jsons[j].name;
                             j = jsons.length;
                         }
+                    }
+                    if (!name) {
+                        console.warn('plus: author [' + o.author + '] do not have type Article');
                     }
                     cb.call(this, {
                         tab: o,
@@ -209,7 +216,7 @@ module.exports = Reflux.createStore({
                 items = items.concat(json.itemListElement);
             }
         });
-        this.pending += items.length + 1;
+        this.pending += items.length;
         this.core(items);
     },
     core: function (items) {
@@ -246,37 +253,39 @@ module.exports = Reflux.createStore({
         return this.data;
     },
     onDel: function (listName, elName) {
+        var next;
         if (elName === undefined) {
+            next = getNext(this.data, listName);
             delete this.data[listName];
         } else {
+            next = getNext(this.data[listName], elName);
             delete this.data[listName].children[elName];
             if (Object.keys(this.data[listName].children).length === 0) {
                 delete this.data[listName].children;
+                this.data[listName].active = true;
             }
         }
-        this.update();
-        this.trigger(this.data);
+        this.update(function () {
+            if (next) {
+                window.location = next;
+            } else {
+                this.trigger(this.data);
+            }
+        }.bind(this));
     },
     haveData: function () {
-        return (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
+        return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
     },
     onRead: function () {
-        if (this.haveData && (this.pending !== 0)) {
+        if (this.haveData() && (this.pending === 0)) {
             this.merge();
         } else {
-            this.data = JSON.parse(localStorage.getItem('plus')) || {};
-            if (this.haveData) {
-                this.merge();
-            } else if (this.pending !== 0) {
-                var self = this,
-                    i;
-                i = setInterval(function () {
-                    if (self.pending === 0) {
-                        clearInterval(i);
-                        this.merge();
-                    }
-                }, 100);
-            }
+            var i = setInterval(function () {
+                if (this.haveData() && (this.pending === 0)) {
+                    clearInterval(i);
+                    this.merge();
+                }
+            }.bind(this), 100);
         }
     }
 });
