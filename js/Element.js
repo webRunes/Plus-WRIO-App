@@ -18,7 +18,7 @@ var Element = React.createClass({
         var
             className = classNames({
                 active: this.state.active,
-                panel: this.state.active,
+                panel: this.state.active
             }),
             o = this.props.data,
             name = o.name;
