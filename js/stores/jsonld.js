@@ -1,12 +1,13 @@
 var Reflux = require('reflux'),
     request = require('superagent'),
-    sortBy = require('lodash.sortby'),
     host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
     Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
     storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
         promise: Promise
     }),
+    lastOrder = require('./tools').lastOrder,
+    getNext = require('./tools').getNext,
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
@@ -32,24 +33,27 @@ module.exports = Reflux.createStore({
     pending: 0,
     onData: function (params) {
         var o = params.tab,
-            name = params.parent;
-        if (name) {
-            if (this.data[name] === undefined) {
-                this.data[name] = {
-                    name: name,
-                    url: o.author,
+            parentName = params.parent,
+            key;
+        if (parentName) {
+            key = o.author;
+            if (this.data[key] === undefined) {
+                this.data[key] = {
+                    name: parentName,
+                    url: key,
                     order: o.order
                 };
             }
-            if (this.data[name].children === undefined) {
-                this.data[name].children = {};
+            if (this.data[key].children === undefined) {
+                this.data[key].children = {};
             }
-            this.data[name].children[o.name] = o;
+            this.data[key].children[o.url] = o;
         } else {
             if (o.author) {
                 console.warn('plus: author [' + o.author + '] do not have type Article');
             }
-            this.data[o.name] = o;
+            key = o.url;
+            this.data[key] = o;
         }
         this.pending -= 1;
         if (this.pending === 0) {
@@ -62,48 +66,39 @@ module.exports = Reflux.createStore({
             }.bind(this));
         }
     },
-    lastOrder: function (x) {
-        var keys = Object.keys(x),
-            max = (keys.length === 0) ? 0 : x[keys[0]].order,
-            i;
-        for (i = 1; i < keys.length; i += 1) {
-            var order = x[keys[i]].order;
-            if (order > max) {
-                max = order;
-            }
-        }
-        return max;
-    },
     onDataActive: function (params) {
         var o = params.tab,
-            name = params.parent;
-        if (name) {
-            if (this.data[name] === undefined) {
-                this.data[name] = {
-                    name: name,
-                    url: o.author,
-                    order: this.lastOrder(this.data) + 1
+            parentName = params.parent,
+            key;
+        if (o.author) {
+            //check parent
+            key = o.author;
+            if (this.data[key] === undefined) {
+                this.data[key] = {
+                    name: parentName,
+                    url: key,
+                    order: lastOrder(this.data) + 1
                 };
             }
-            if (this.data[name].children === undefined) {
-                this.data[name].children = {};
+            if (this.data[key].children === undefined) {
+                this.data[key].children = {};
             }
-            var children = this.data[name].children;
-            if (children[o.name]) {
-                children[o.name].active = true;
+            var children = this.data[key].children;
+            //update child
+            key = o.url;
+            if (children[key]) {
+                children[key].active = true;
             } else {
-                children[o.name] = o;
-                children[o.name].order = this.lastOrder(children);
+                children[key] = o;
+                children[key].order = lastOrder(children);
             }
         } else {
-            if (o.author) {
-                console.warn('plus: author [' + o.author + '] do not have type Article');
-            }
-            if (this.data[o.name]) {
-                this.data[o.name].active = true;
+            key = o.url;
+            if (this.data[key]) {
+                this.data[key].active = true;
             } else {
-                this.data[o.name] = o;
-                this.data[o.name].order = this.lastOrder(this.data);
+                this.data[key] = o;
+                this.data[key].order = lastOrder(this.data);
             }
         }
     },
@@ -188,7 +183,7 @@ module.exports = Reflux.createStore({
             }
         }
         if (o) {
-            if (o.author) {
+            if (!this.data[o.author]) {
                 this.getHttp(o.author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
@@ -196,6 +191,9 @@ module.exports = Reflux.createStore({
                             name = jsons[j].name;
                             j = jsons.length;
                         }
+                    }
+                    if (!name) {
+                        console.warn('plus: author [' + o.author + '] do not have type Article');
                     }
                     cb.call(this, {
                         tab: o,
@@ -257,10 +255,10 @@ module.exports = Reflux.createStore({
     onDel: function (listName, elName) {
         var next;
         if (elName === undefined) {
-            next = this.getNext(this.data, listName);
+            next = getNext(this.data, listName);
             delete this.data[listName];
         } else {
-            next = this.getNext(this.data[listName].children, elName);
+            next = getNext(this.data[listName], elName);
             delete this.data[listName].children[elName];
             if (Object.keys(this.data[listName].children).length === 0) {
                 delete this.data[listName].children;
@@ -274,31 +272,6 @@ module.exports = Reflux.createStore({
                 this.trigger(this.data);
             }
         }.bind(this));
-        
-    },
-    getNext: function (obj, key) {
-        if (!obj[key].active) {
-            return;
-        }
-        var children = sortBy(
-            Object.keys(obj).map(function (name) {
-                return obj[name];
-            }),
-            'order'
-        ),
-            i,
-            child,
-            next;
-        for (i = 0; i < children.length; i += 1) {
-            child = children[i];
-            if (child.name === key) {
-                break;
-            }
-        }
-        next = children[i - 1] || children[i + 1];
-        if (next) {
-            return next.url;
-        }
     },
     haveData: function () {
         return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
