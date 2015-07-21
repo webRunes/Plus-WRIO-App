@@ -13,8 +13,9 @@ module.exports.lastOrder = function (x) {
     return max;
 };
 
-module.exports.getNext = function (obj, key) {
-    if (!obj[key].active) {
+module.exports.getNext = function (data, current) {
+    var obj = data.children || data;
+    if (!obj[current].active) {
         return;
     }
     var children = sortBy(
@@ -28,10 +29,10 @@ module.exports.getNext = function (obj, key) {
         next;
     for (i = 0; i < children.length; i += 1) {
         child = children[i];
-        if (child.name === key) {
+        if (child.url === current) {
             break;
         }
     }
     next = children[i - 1] || children[i + 1];
-    return next ? next.url : undefined;
+    return next ? next.url : data.url;
 };

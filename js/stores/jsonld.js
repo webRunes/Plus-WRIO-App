@@ -7,7 +7,7 @@ var Reflux = require('reflux'),
         promise: Promise
     }),
     lastOrder = require('./tools').lastOrder,
-    getNext = require('./tools').lastOrder,
+    getNext = require('./tools').getNext,
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
@@ -70,7 +70,7 @@ module.exports = Reflux.createStore({
         var o = params.tab,
             parentName = params.parent,
             key;
-        if (parentName) {
+        if (o.author) {
             //check parent
             key = o.author;
             if (this.data[key] === undefined) {
@@ -93,9 +93,6 @@ module.exports = Reflux.createStore({
                 children[key].order = lastOrder(children);
             }
         } else {
-            if (o.author) {
-                console.warn('plus: author [' + o.author + '] do not have type Article');
-            }
             key = o.url;
             if (this.data[key]) {
                 this.data[key].active = true;
@@ -195,6 +192,9 @@ module.exports = Reflux.createStore({
                             j = jsons.length;
                         }
                     }
+                    if (!name) {
+                        console.warn('plus: author [' + o.author + '] do not have type Article');
+                    }
                     cb.call(this, {
                         tab: o,
                         parent: name
@@ -258,7 +258,7 @@ module.exports = Reflux.createStore({
             next = getNext(this.data, listName);
             delete this.data[listName];
         } else {
-            next = getNext(this.data[listName].children, elName);
+            next = getNext(this.data[listName], elName);
             delete this.data[listName].children[elName];
             if (Object.keys(this.data[listName].children).length === 0) {
                 delete this.data[listName].children;
