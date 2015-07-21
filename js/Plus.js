@@ -1,5 +1,4 @@
 var React = require('react'),
-    update = require('react/addons/update'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     Element = require('./Element'),
@@ -37,9 +36,6 @@ var List = React.createClass({
     propTypes: {
         data: React.PropTypes.object.isRequired
     },
-    del: function (listName) {
-        actions.del(listName);
-    },
     render: function() {
         var lis = sortBy(
             Object.keys(this.props.data).map(function (name) {
@@ -48,13 +44,12 @@ var List = React.createClass({
             'order'
         ).map(function (item) {
             if (item.children) {
-                return <SubList data={item} key={item.name} />;
+                return <SubList data={item} key={item.url} />;
             }
-            var self = this,
-                del = function () {
-                    self.del(item.name);
-                };
-            return <Element del={del} data={item} listName={item.name} key={item.name} />;
+            var del = function () {
+                actions.del(item.url);
+            };
+            return <Element del={del} data={item} listName={item.name} key={item.url} />;
         }, this);
         return (
             <ul id="nav-accordion" className="nav navbar-var">
@@ -75,9 +70,6 @@ var SubList = React.createClass({
     gotoUrl: function () {
         window.location = this.props.data.url;
     },
-    del: function (elName) {
-        actions.del(this.props.data.name, elName);
-    },
     createElements: function () {
         var children = this.props.data.children;
         return sortBy(
@@ -86,14 +78,14 @@ var SubList = React.createClass({
             }),
             'order'
         ).map(function (i) {
-            var self = this,
+            var list = this.props.data.url,
                 del = function () {
-                    self.del(i.name);
+                    actions.del(list, i.url);
                 };
             if (i.active) {
                 this.style.height = 'auto';
             }
-            return <Element del={del} data={i} key={i.name} />;
+            return <Element del={del} data={i} key={i.url} />;
         }, this);
     },
     render: function () {
