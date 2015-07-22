@@ -1,4 +1,5 @@
-var sortBy = require('lodash.sortby');
+var sortBy = require('lodash.sortby'),
+    request = require('superagent');
 
 module.exports.lastOrder = function (x) {
     var keys = Object.keys(x),
@@ -35,4 +36,31 @@ module.exports.getNext = function (data, current) {
     }
     next = children[i - 1] || children[i + 1];
     return next ? next.url : data.url;
+};
+
+module.exports.getJsonldsByUrl = function (url, cb) {
+    var self = this;
+    request.get(
+        url,
+        function (err, result) {
+            if (!err && (typeof result === 'object')) {
+                var e = document.createElement('div');
+                e.innerHTML = result.text;
+                result = Array.prototype.filter.call(e.getElementsByTagName('script'), function (el) {
+                    return el.type === 'application/ld+json';
+                }).map(function (el) {
+                    var json;
+                    try {
+                        json = JSON.parse(el.textContent);
+                    } catch (exception) {
+                        console.error('Requested json-ld from ' + url + ' not valid: ' + exception);
+                    }
+                    return json;
+                }).filter(function (json) {
+                    return typeof json === 'object';
+                });
+            }
+            cb.call(self, result || []);
+        }
+    );
 };

@@ -1,13 +1,14 @@
 var Reflux = require('reflux'),
-    request = require('superagent'),
     host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
     Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
     storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
         promise: Promise
     }),
-    lastOrder = require('./tools').lastOrder,
-    getNext = require('./tools').getNext,
+    tools = require('./tools'),
+    getJsonldsByUrl = tools.getJsonldsByUrl,
+    lastOrder = tools.lastOrder,
+    getNext = tools.getNext,
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
@@ -20,21 +21,22 @@ module.exports = Reflux.createStore({
         storage.onConnect().then(function () {
             return storage.get('plus');
         }).then(function (res) {
-            this.data = res || {};
-            if (!this.haveData()) {
-                this.getHttp(
+            if (res) {
+                this.data = res;
+            } else {
+                getJsonldsByUrl(
                     this.getUrl(),
-                    this.filterItemList
+                    this.filterItemList.bind(this)
                 );
             }
         }.bind(this));
     },
-    data: {},
     pending: 0,
     onData: function (params) {
         var o = params.tab,
             parentName = params.parent,
             key;
+        this.data = this.data || {};
         if (parentName) {
             key = o.author;
             if (this.data[key] === undefined) {
@@ -70,6 +72,7 @@ module.exports = Reflux.createStore({
         var o = params.tab,
             parentName = params.parent,
             key;
+        this.data = this.data || {};
         if (o.author) {
             //check parent
             key = o.author;
@@ -109,32 +112,6 @@ module.exports = Reflux.createStore({
                 storage.set('plus', this.data);
             }.bind(this))
             .then(cb);
-    },
-    getHttp: function (url, cb) {
-        var self = this;
-        request.get(
-            url,
-            function (err, result) {
-                if (!err && (typeof result === 'object')) {
-                    var e = document.createElement('div');
-                    e.innerHTML = result.text;
-                    result = Array.prototype.filter.call(e.getElementsByTagName('script'), function (el) {
-                        return el.type === 'application/ld+json';
-                    }).map(function (el) {
-                        var json;
-                        try {
-                            json = JSON.parse(el.textContent);
-                        } catch (exception) {
-                            console.error('Requested json-ld from ' + url + ' not valid: ' + exception);
-                        }
-                        return json;
-                    }).filter(function (json) {
-                        return typeof json === 'object';
-                    });
-                }
-                cb.call(self, result || []);
-            }
-        );
     },
     merge: function () {
         this.removeLastActive(this.data);
@@ -183,8 +160,8 @@ module.exports = Reflux.createStore({
             }
         }
         if (o) {
-            if (!this.data[o.author]) {
-                this.getHttp(o.author, function (jsons) {
+            if (o.author && !this.data[o.author]) {
+                getJsonldsByUrl(o.author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -229,7 +206,7 @@ module.exports = Reflux.createStore({
             };
             var author = o.author;
             if (author) {
-                this.getHttp(author, function (jsons) {
+                getJsonldsByUrl(author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -274,7 +251,7 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
     haveData: function () {
-        return (this.data !== null) && (typeof this.data === 'object') && (Object.keys(this.data).length !== 0);
+        return ((this.data !== null) && (typeof this.data === 'object'));
     },
     onRead: function () {
         if (this.haveData() && (this.pending === 0)) {

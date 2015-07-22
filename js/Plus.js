@@ -95,7 +95,7 @@ var SubList = React.createClass({
             lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
-            <li className="panel">
+            <li className={this.style.height === 'auto' ? 'panel' : ''}>
                 <a>
                     <span className="qty pull-right">{rightContent}</span>
                     <span onClick={this.gotoUrl}>{name}</span>
