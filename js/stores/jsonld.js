@@ -9,6 +9,7 @@ var Reflux = require('reflux'),
     getJsonldsByUrl = tools.getJsonldsByUrl,
     lastOrder = tools.lastOrder,
     getNext = tools.getNext,
+    normURL = require('./normURL'),
     Actions = require('../actions/jsonld');
 
 module.exports = Reflux.createStore({
@@ -151,8 +152,8 @@ module.exports = Reflux.createStore({
                 if ((typeof json === 'object') && (json['@type'] === 'Article')) {
                     o = {
                         name: json.name,
-                        url: window.location.href,
-                        author: json.author,
+                        url: normURL(window.location.href),
+                        author: normURL(json.author),
                         active: true
                     };
                     break;
@@ -200,8 +201,8 @@ module.exports = Reflux.createStore({
         items.forEach(function (o, order) {
             o = {
                 name: o.name,
-                url: o.url,
-                author: o.author,
+                url: normURL(o.url),
+                author: normURL(o.author),
                 order: order
             };
             var author = o.author;
