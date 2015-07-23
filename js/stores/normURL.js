@@ -18,7 +18,7 @@ var cutTail = function (url) {
 };
 
 var cutIndex = function (url) {
-    return url.replace('/index.html', '');
+    return url.replace('/index.htm', '');
 };
 
 var cutLastSlash = function (url) {
