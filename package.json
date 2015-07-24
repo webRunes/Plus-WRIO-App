@@ -16,8 +16,12 @@
   },
   "scripts": {
     "build": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
+    "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
     "test": "",
-    "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d"
+    "canBumpVersion": "node -e 'p=process;p.exit(p.argv[1]+p.argv[2]===\"AlexeyAnshakov\"?0:1)' `git log -1 --format='%an'` && npm run canUpdate;echo",
+    "bumpVersion": "npm run version && npm run bundle",
+    "version": "sh version.sh",
+    "bundle": "sh bundle.sh"
   },
   "dependencies": {
     "aws-sdk-apis": "*",
