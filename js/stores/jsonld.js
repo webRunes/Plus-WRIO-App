@@ -245,7 +245,7 @@ module.exports = Reflux.createStore({
         }
         this.update(function () {
             if (next) {
-                window.location = next;
+                window.location = 'http://' + next;
             } else {
                 this.trigger(this.data);
             }
