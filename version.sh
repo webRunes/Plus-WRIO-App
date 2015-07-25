@@ -1,4 +1,5 @@
 #!/bin/sh
+openssl aes-256-cbc -K $encrypted_8c393341f536_key -iv $encrypted_8c393341f536_iv -in deploy_key.enc -out deploy_key -d
 chmod 600 deploy_key
 mv deploy_key ~/.ssh/id_rsa
 git config user.email "AlexeyAnshakov@users.noreply.github.com"
