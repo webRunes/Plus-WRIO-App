@@ -12,7 +12,7 @@ var Element = React.createClass({
         };
     },
     active: function () {
-        window.location = this.props.data.url;
+        window.location = 'http://' + this.props.data.url;
     },
     render: function() {
         var

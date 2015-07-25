@@ -68,7 +68,7 @@ var SubList = React.createClass({
         overflow: 'hidden'
     },
     gotoUrl: function () {
-        window.location = this.props.data.url;
+        window.location = 'http://' + this.props.data.url;
     },
     createElements: function () {
         var children = this.props.data.children;
