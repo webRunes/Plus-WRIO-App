@@ -17,7 +17,7 @@ module.exports.lastOrder = function (x) {
 module.exports.getNext = function (data, current) {
     var obj = data.children || data;
     if (!obj[current].active) {
-        return;
+        return undefined;
     }
     var children = sortBy(
         Object.keys(obj).map(function (name) {
