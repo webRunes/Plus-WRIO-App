@@ -17,7 +17,7 @@
   "scripts": {
     "start": "npm run lint && npm run build",
     "lint": "eslint js",
-    "build": "npm run buildTest && npm run buildHub",
+    "build": "npm run buildTest & npm run buildHub",
     "buildHub": "browserify -g uglifyify js/hub.js -o widget/hub.min.js",
     "buildTest": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
