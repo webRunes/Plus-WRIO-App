@@ -178,5 +178,5 @@ FakesAssemblies/
 config.json
 
 #Browserify bundles
-widget/hub.min.js
+widget/storageHub.htm
 test/bundle.js
