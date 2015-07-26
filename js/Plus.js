@@ -68,7 +68,7 @@ var SubList = React.createClass({
         overflow: 'hidden'
     },
     gotoUrl: function () {
-        window.location = this.props.data.url;
+        window.location = 'http://' + this.props.data.url;
     },
     createElements: function () {
         var children = this.props.data.children;
@@ -95,7 +95,7 @@ var SubList = React.createClass({
             lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
-            <li className="panel">
+            <li className={this.style.height === 'auto' ? 'panel' : ''}>
                 <a>
                     <span className="qty pull-right">{rightContent}</span>
                     <span onClick={this.gotoUrl}>{name}</span>
