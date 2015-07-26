@@ -162,7 +162,7 @@ module.exports = Reflux.createStore({
         }
         if (o) {
             if (o.author && !this.data[o.author]) {
-                getJsonldsByUrl(o.author, function (jsons) {
+                getJsonldsByUrl('//' + o.author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -207,7 +207,7 @@ module.exports = Reflux.createStore({
             };
             var author = o.author;
             if (author) {
-                getJsonldsByUrl(author, function (jsons) {
+                getJsonldsByUrl('//' + author, function (jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -245,7 +245,7 @@ module.exports = Reflux.createStore({
         }
         this.update(function () {
             if (next) {
-                window.location = 'http://' + next;
+                window.location = '//' + next;
             } else {
                 this.trigger(this.data);
             }

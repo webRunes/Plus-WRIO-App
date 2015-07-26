@@ -176,3 +176,7 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 config.json
+
+#Browserify bundles
+widget/hub.min.js
+test/bundle.js

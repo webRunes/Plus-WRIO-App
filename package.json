@@ -15,7 +15,11 @@
     ]
   },
   "scripts": {
-    "build": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
+    "start": "npm run lint && npm run build",
+    "lint": "eslint js",
+    "build": "npm run buildTest & npm run buildHub",
+    "buildHub": "browserify -g uglifyify js/hub.js -o widget/hub.min.js",
+    "buildTest": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
     "test": "",
     "canBumpVersion": "node -e 'p=process;p.exit(p.argv[1]+p.argv[2]===\"AlexeyAnshakov\"?0:1)' `git log -1 --format='%an'` && npm run bumpVersion;echo",
@@ -46,8 +50,12 @@
     "browserify": "^10.2.4",
     "browserify-notify": "^1.1.2",
     "envify": "^3.4.0",
+    "eslint": "^0.24.1",
+    "eslint-plugin-react": "^3.0.0",
+    "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "react-tools": "^0.13.3",
     "reactify": "^1.1.1",
+    "uglifyify": "^3.0.1",
     "watchify": "^3.2.2"
   }
 }
