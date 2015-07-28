@@ -15,14 +15,14 @@
     ]
   },
   "scripts": {
-    "start": "npm run lint && npm run build",
+    "postinstall": "npm run buildHub",
+    "start": "npm run lint && npm run buildTest",
     "lint": "eslint js",
     "build": "npm run buildTest & npm run buildHub",
     "buildHub": "echo '<script>' > widget/storageHub.htm && browserify -g uglifyify js/hub.js >> widget/storageHub.htm && echo '</script>' >> widget/storageHub.htm",
     "buildTest": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
     "test": "",
-    "canBumpVersion": "node -e 'p=process;p.exit(p.argv[1]+p.argv[2]===\"AlexeyAnshakov\"?0:1)' `git log -1 --format='%an'` && npm run bumpVersion;echo",
     "bumpVersion": "npm run version && npm run bundle",
     "version": "sh version.sh",
     "bundle": "sh bundle.sh"
