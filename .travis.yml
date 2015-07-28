@@ -9,7 +9,7 @@ install : npm install
 script  : npm start
 
 after_success:
-  - npm run canBumpVersion
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$(git log -1 --format='%an')" == "Alexey Anshakov" ]; then npm run bumpVersion; fi
 
 deploy:
   provider: s3
