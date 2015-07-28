@@ -19,7 +19,7 @@
     "start": "npm run lint && npm run buildTest",
     "lint": "eslint js",
     "build": "npm run buildTest & npm run buildHub",
-    "buildHub": "echo '<script>' > widget/storageHub.htm && browserify -g uglifyify js/hub.js >> widget/storageHub.htm && echo '</script>' >> widget/storageHub.htm",
+    "buildHub": "echo '<script>' > widget/storageHub.htm && ./node_modules/.bin/browserify -g uglifyify js/hub.js >> widget/storageHub.htm && echo '</script>' >> widget/storageHub.htm",
     "buildTest": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
     "bumpVersion": "npm run version && npm run bundle",
