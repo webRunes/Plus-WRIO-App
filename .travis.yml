@@ -12,12 +12,20 @@ after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$(git log -1 --format='%an')" == "Alexey Anshakov" ]; then npm run bumpVersion; fi
 
 deploy:
-  provider: s3
-  access_key_id:
-    secure: U1SnSfzC8L+66H04IruqD6taOM+UZACCDHp7IaM4MkF7Y62ibv2e1QfLUg1eqsNuELKcpDdSQ5EUPcR8+RgVSVd4KhsUhL2eq3hL3QfUDWc9zfl8f6fQFeIiqhsaIcGPYg1/yQFIRDYyGpMaFMBEUWS4FQ810lOOLRzXcZlJV6Q=
-  secret_access_key:
-    secure: jS/GixCUB4isSx3Cn+EPlyYq4wP9XKfh4v7j0fZwe2QWFdwVlE8NH8DWuLQOrw6QfBa++qEg58o4mxe8uf446Au/NcKsHtykunfYGI9eV8iPvhFVHOW4SzvMcuwfVyoJPc4TyWawKqoff+bd/TVN5lqmUwtpKBS57reMHWxdD/A=
-  bucket: wrioos.com
-  upload-dir: Plus-WRIO-App
-  acl: public_read
+  - provider: s3
+    access_key_id:
+      secure: U1SnSfzC8L+66H04IruqD6taOM+UZACCDHp7IaM4MkF7Y62ibv2e1QfLUg1eqsNuELKcpDdSQ5EUPcR8+RgVSVd4KhsUhL2eq3hL3QfUDWc9zfl8f6fQFeIiqhsaIcGPYg1/yQFIRDYyGpMaFMBEUWS4FQ810lOOLRzXcZlJV6Q=
+    secret_access_key:
+      secure: jS/GixCUB4isSx3Cn+EPlyYq4wP9XKfh4v7j0fZwe2QWFdwVlE8NH8DWuLQOrw6QfBa++qEg58o4mxe8uf446Au/NcKsHtykunfYGI9eV8iPvhFVHOW4SzvMcuwfVyoJPc4TyWawKqoff+bd/TVN5lqmUwtpKBS57reMHWxdD/A=
+    bucket: wrioos.com
+    upload-dir: Plus-WRIO-App
+    acl: public_read
+  - provider: opsworks
+    access_key_id:
+      secure: e/zx9ISltVMVTx6JDk+ByGSmt7rAbX51WL7e5gE513JpLvaKcalmE7mW/fxGBeyxumyFHHGiwP4O16+5e3oCMgYynOOTIH0XTxFBAknNoY5DE2y1V/Hu7x9qGwKhdvOb2vaXbgL7FRETocrr5Derrlc83iMjDq5LxZ63gPZrtq0=
+    secret_access_key:
+      secure: ZhVBTUdoEP7GJvcyXweUVPi6KSsGmhx58Y4OP01zR8XyJnhARu1Xxf5nmWM+IJjx1wveNLC0itxaCLWwj8ZB27DCHBnpbBVSZfs5ft+0vV3RplEfF39MJln+rWMkc+CPZR909aEE4dPurMDPjC3hNE66RF9DymK7GU0YNHSVO6A=
+    app-id: 450f10a2-c4e1-43ea-94da-dd0333b98757
+    
+
   
