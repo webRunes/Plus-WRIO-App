@@ -21,6 +21,7 @@ deploy:
     bucket: wrioos.com
     upload-dir: Plus-WRIO-App
     acl: public_read
+    skip_cleanup: true
   - provider: opsworks
     access_key_id:
       secure: e/zx9ISltVMVTx6JDk+ByGSmt7rAbX51WL7e5gE513JpLvaKcalmE7mW/fxGBeyxumyFHHGiwP4O16+5e3oCMgYynOOTIH0XTxFBAknNoY5DE2y1V/Hu7x9qGwKhdvOb2vaXbgL7FRETocrr5Derrlc83iMjDq5LxZ63gPZrtq0=
