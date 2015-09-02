@@ -21,6 +21,7 @@ deploy:
     bucket: wrioos.com
     upload-dir: Plus-WRIO-App
     acl: public_read
+    skip_cleanup: true
     on:
       branch: production
   - provider: opsworks
