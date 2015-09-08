@@ -15,10 +15,9 @@ var Element = React.createClass({
         window.location = 'http://' + this.props.data.url;
     },
     render: function() {
-        var
-            className = classNames({
+        var className = classNames({
                 active: this.state.active,
-                panel: this.state.active
+                panel: true
             }),
             o = this.props.data,
             name = o.name;
