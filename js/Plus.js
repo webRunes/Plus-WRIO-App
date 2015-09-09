@@ -49,7 +49,7 @@ var List = React.createClass({
             var del = function () {
                 actions.del(item.url);
             };
-            return <Element del={del} data={item} listName={item.name} key={item.url} />;
+            return <Element className="panel" del={del} data={item} listName={item.name} key={item.url} />;
         }, this);
         return (
             <ul id="nav-accordion" className="nav navbar-var">
@@ -85,7 +85,7 @@ var SubList = React.createClass({
             if (i.active) {
                 this.style.height = 'auto';
             }
-            return <Element del={del} data={i} key={i.url} />;
+            return <Element className="panel" del={del} data={i} key={i.url} />;
         }, this);
     },
     render: function () {
@@ -95,8 +95,8 @@ var SubList = React.createClass({
             lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
         return (
-            <li className={this.style.height === 'auto' ? 'panel' : ''}>
-                <a>
+            <li className="panel">
+                <a className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
                     <span className="qty pull-right">{rightContent}</span>
                     <span onClick={this.gotoUrl}>{name}</span>
                 </a>
