@@ -2,6 +2,7 @@ var React = require('react'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     Element = require('./Element'),
+    classNames = require('classnames'),
     sortBy = require('lodash.sortby'),
     P = require('./P');
 
@@ -94,11 +95,17 @@ var SubList = React.createClass({
             name = o.name,
             lis = this.createElements(),
             rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
+
+        var className = classNames({
+            panel: true,
+            open: (this.props.data.active && o.children)
+        });
+
         return (
-            <li className="panel">
-                <a className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
+            <li className={className}>
+                <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
                     <span className="qty pull-right">{rightContent}</span>
-                    <span onClick={this.gotoUrl}>{name}</span>
+                    <span>{name}</span>
                 </a>
                 <div className="in" style={this.style}>
                     <ul className="nav nav-pills nav-stacked sub">
