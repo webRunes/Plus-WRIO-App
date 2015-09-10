@@ -98,7 +98,7 @@ var SubList = React.createClass({
 
         var className = classNames({
             panel: true,
-            open : (this.props.data.active && o.children)
+            open: (this.props.data.active && o.children)
         });
 
         return (
