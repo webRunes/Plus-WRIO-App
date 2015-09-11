@@ -1,5 +1,6 @@
 var React = require('react'),
-    classNames = require('classnames');
+    classNames = require('classnames'),
+    superAgent = require('superagent');
 
 var P = React.createClass({
     propTypes: {
@@ -16,7 +17,9 @@ var P = React.createClass({
         });
     },
     gotoUrl: function(){
-        //window.location = 'http://' + this.props.data.url;
+        superAgent.post("http://storage.wrioos.com/api/get_profile").withCredentials().end(function(resp){
+            window.location = 'http://wr.io/' + resp.id + '/Plus-WRIO-App/';
+        });
     },
     render: function () {
         var className = classNames('new panel', {active: this.state.active});
