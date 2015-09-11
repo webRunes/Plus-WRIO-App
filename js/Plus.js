@@ -90,16 +90,17 @@ var SubList = React.createClass({
         }, this);
     },
     render: function () {
-
         this.style.height = this.props.data.active ? 'auto' : '0px';
         var o = this.props.data,
             name = o.name,
             lis = this.createElements(),
-            rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
-            className = classNames({
-                panel: true,
-                open: (o.children && (this.props.data.active || o.children.active))
-            });
+            rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />;
+
+        var className = classNames({
+            panel: true,
+            open: (this.props.data.active && o.children)
+        });
+
         return (
             <li className={className}>
                 <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">

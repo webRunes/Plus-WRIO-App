@@ -15,14 +15,14 @@ var P = React.createClass({
             active: !this.state.active
         });
     },
-    gotoUrl: function(){
-        //window.location = 'http://' + this.props.data.url;
+    gotoUlr: function(){
+        window.location = 'http://wr.io/' + this.props.data.url + '/Plus-WRIO-App/';
     },
     render: function () {
         var className = classNames('new panel', {active: this.state.active});
         return (
             <li className={className}>
-                <a onClick={this.gotoUrl} style={{width: '100%'}} className="collapsed">
+                <a onClick={function() { this.active(); this.gotoUrl(); }} style={{width: '100%'}} className="collapsed">
                     <span className="glyphicon glyphicon-plus"></span>
                 </a>
             </li>
