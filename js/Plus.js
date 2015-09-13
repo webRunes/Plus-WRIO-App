@@ -35,37 +35,6 @@ class Plus extends React.Component{
     }
 }
 
-class List extends React.Component{
-    constructor (props) {
-        super(props);
-    }
-    render() {
-        var lis = sortBy(
-            Object.keys(this.props.data).map(function (name) {
-                return this.props.data[name];
-            }, this),
-            'order'
-        ).map(function (item) {
-            if (item.children) {
-                return <SubList data={item} key={item.url} />;
-            }
-            var del = function () {
-                actions.del(item.url);
-            };
-            return <Element className="panel" del={del} data={item} listName={item.name} key={item.url} />;
-        }, this);
-        return (
-            <ul id="nav-accordion" className="nav navbar-var">
-                {lis}
-                <P data={{name: 'plus', url: '//wrcd'}} />
-            </ul>
-        );
-    }
-}
-
-List.prototype.propTypes = {
-    data: React.PropTypes.object.isRequired
-};
 
 class SubList extends React.Component{
     gotoUrl () {
@@ -119,11 +88,11 @@ class SubList extends React.Component{
     }
 }
 
-SubList.prototype.propTypes = {
+SubList.propTypes = {
     data: React.PropTypes.object.isRequired
 };
 
-SubList.prototype.style = {
+SubList.style = {
     overflow: 'hidden'
 };
 
