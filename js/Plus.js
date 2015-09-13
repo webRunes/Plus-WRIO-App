@@ -1,3 +1,4 @@
+'use strict'
 var React = require('react'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
@@ -6,20 +7,24 @@ var React = require('react'),
     sortBy = require('lodash.sortby'),
     P = require('./P');
 
-var Plus = React.createClass({
-    componentDidMount: function () {
+class Plus extends React.Component{
+
+    constructor (props) {
+        super(props);
+        this.onStateChange = (jsonld) => {
+            this.setState({jsonld: jsonld});
+        };
+    }
+
+    componentDidMount() {
         this.unsubscribe = store.listen(this.onStateChange);
         actions.read();
-    },
-    componentWillUnmount: function () {
+    }
+    componentWillUnmount() {
         this.unsubscribe();
-    },
-    onStateChange: function (jsonld) {
-        this.setState({
-            jsonld: jsonld
-        });
-    },
-    render: function() {
+    }
+
+    render() {
         if (this.state === null) {
             return null;
         }
@@ -31,13 +36,10 @@ var Plus = React.createClass({
             </div>
         );
     }
-});
+}
 
-var List = React.createClass({
-    propTypes: {
-        data: React.PropTypes.object.isRequired
-    },
-    render: function() {
+class List extends React.Component{
+    render() {
         var lis = sortBy(
             Object.keys(this.props.data).map(function (name) {
                 return this.props.data[name];
@@ -55,23 +57,22 @@ var List = React.createClass({
         return (
             <ul id="nav-accordion" className="nav navbar-var">
                 {lis}
-                <P data={{name: 'plus', url: 'http://wrcd'}} />
+                <P data={{name: 'plus', url: '//wrcd'}} />
             </ul>
         );
     }
-});
+};
 
-var SubList = React.createClass({
-    propTypes: {
-        data: React.PropTypes.object.isRequired
-    },
-    style: {
-        overflow: 'hidden'
-    },
-    gotoUrl: function () {
-        window.location = 'http://' + this.props.data.url;
-    },
-    createElements: function () {
+List.prototype.propTypes =  {
+    data: React.PropTypes.object.isRequired
+};
+
+class SubList extends React.Component{
+    gotoUrl () {
+        window.location = '//' + this.props.data.url;
+    }
+
+    createElements () {
         var children = this.props.data.children;
         return sortBy(
             Object.keys(children).map(function (name) {
@@ -88,17 +89,19 @@ var SubList = React.createClass({
             }
             return <Element className="panel" del={del} data={i} key={i.url} />;
         }, this);
-    },
-    render: function () {
+    }
+
+    render() {
 
         this.style.height = this.props.data.active ? 'auto' : '0px';
-        var o = this.props.data,
-            name = o.name,
+        var data = this.props.data,
+            name = data.name,
             lis = this.createElements(),
-            rightContent = o.children ? Object.keys(o.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
+            rightContent = data.children ? Object.keys(data.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
             className = classNames({
                 panel: true,
-                open: (o.children && (this.props.data.active || o.children.active))
+                active: data.active,
+                open: (data.children && (data.active || data.children.active))
             });
         return (
             <li className={className}>
@@ -114,6 +117,14 @@ var SubList = React.createClass({
             </li>
         );
     }
-});
+};
+
+SubList.prototype.propTypes = {
+    data: React.PropTypes.object.isRequired
+};
+
+SubList.prototype.style = {
+    overflow: 'hidden'
+};
 
 module.exports = Plus;
