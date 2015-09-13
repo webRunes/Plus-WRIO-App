@@ -17,7 +17,7 @@ var P = React.createClass({
         });
     },
     gotoUrl: function(){
-        superAgent.post("http://storage.wrioos.com/api/get_profile").withCredentials().end(function(resp){
+        superAgent.post('http://storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
             window.location = 'http://wr.io/' + resp.id + '/Plus-WRIO-App/';
         });
     },
