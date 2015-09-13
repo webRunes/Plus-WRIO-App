@@ -10,9 +10,12 @@ var React = require('react'),
 class Plus extends React.Component{
     constructor (props) {
         super(props);
-        this.onStateChange = (jsonld) => {
-            this.setState({jsonld: jsonld});
-        };
+        this.onStateChange = this.onStateChange.bind(this);
+    }
+    onStateChange (jsonld) {
+        this.setState({
+            jsonld: jsonld
+        });
     }
     componentDidMount() {
         this.unsubscribe = store.listen(this.onStateChange);
@@ -35,6 +38,36 @@ class Plus extends React.Component{
     }
 }
 
+class List extends React.Component{
+    get propTypes() {
+        return {
+            data: React.PropTypes.object.isRequired
+        };
+    }
+
+    render() {
+        var lis = sortBy(
+            Object.keys(this.props.data).map(function (name) {
+                return this.props.data[name];
+            }, this),
+            'order'
+        ).map(function (item) {
+                if (item.children) {
+                    return <SubList data={item} key={item.url} />;
+                }
+                var del = function () {
+                    actions.del(item.url);
+                };
+                return <Element className="panel" del={del} data={item} listName={item.name} key={item.url} />;
+            }, this);
+        return (
+            <ul id="nav-accordion" className="nav navbar-var">
+                {lis}
+                <P data={{name: 'plus', url: 'http://wrcd'}} />
+            </ul>
+        );
+    }
+}
 
 class SubList extends React.Component{
     gotoUrl () {
@@ -92,7 +125,7 @@ SubList.propTypes = {
     data: React.PropTypes.object.isRequired
 };
 
-SubList.style = {
+SubList.prototype.style = {
     overflow: 'hidden'
 };
 
