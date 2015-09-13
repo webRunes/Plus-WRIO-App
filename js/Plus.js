@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var React = require('react'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
@@ -8,14 +8,12 @@ var React = require('react'),
     P = require('./P');
 
 class Plus extends React.Component{
-
     constructor (props) {
         super(props);
         this.onStateChange = (jsonld) => {
             this.setState({jsonld: jsonld});
         };
     }
-
     componentDidMount() {
         this.unsubscribe = store.listen(this.onStateChange);
         actions.read();
@@ -23,7 +21,6 @@ class Plus extends React.Component{
     componentWillUnmount() {
         this.unsubscribe();
     }
-
     render() {
         if (this.state === null) {
             return null;
@@ -39,6 +36,9 @@ class Plus extends React.Component{
 }
 
 class List extends React.Component{
+    constructor (props) {
+        super(props);
+    }
     render() {
         var lis = sortBy(
             Object.keys(this.props.data).map(function (name) {
@@ -61,9 +61,9 @@ class List extends React.Component{
             </ul>
         );
     }
-};
+}
 
-List.prototype.propTypes =  {
+List.prototype.propTypes = {
     data: React.PropTypes.object.isRequired
 };
 
@@ -117,7 +117,7 @@ class SubList extends React.Component{
             </li>
         );
     }
-};
+}
 
 SubList.prototype.propTypes = {
     data: React.PropTypes.object.isRequired
