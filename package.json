@@ -43,6 +43,7 @@
     "gulp-uglify": "^1.4.0",
     "gulp-wrapper": "^1.0.0",
     "lodash.sortby": "^3.1.4",
+    "lodash.some": "*",
     "nconf": "*",
     "passport": "0.2.1",
     "passport-google-oauth": "*",

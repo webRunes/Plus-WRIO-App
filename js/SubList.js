@@ -3,7 +3,8 @@ var React = require('react'),
     actions = require('./actions/jsonld'),
     Item = require('./Item'),
     classNames = require('classnames'),
-    sortBy = require('lodash.sortby');
+    sortBy = require('lodash.sortby'),
+    some = require('lodash.some');
 
 class SubList extends React.Component{
     constructor(props){
@@ -40,13 +41,18 @@ class SubList extends React.Component{
         this.style.height = this.props.data.active ? 'auto' : '0px';
         var data = this.props.data,
             name = data.name,
+            children = data.children,
+            childrenActive = some(children, function(i){
+                return i.active;
+            }),
             lis = this.createItem(),
-            rightContent = data.children ? Object.keys(data.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
+            rightContent = children ? Object.keys(children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
             className = classNames({
                 panel: true,
                 active: data.active,
-                open: (data.children && (data.active || data.children.active))
+                open: (children && (data.active || childrenActive))
             });
+        console.log(childrenActive)
         return (
             <li className={className}>
                 <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
