@@ -52,7 +52,6 @@ class SubList extends React.Component{
                 active: data.active,
                 open: (children && (data.active || childrenActive))
             });
-        console.log(childrenActive)
         return (
             <li className={className}>
                 <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
