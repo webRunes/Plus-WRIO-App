@@ -15,7 +15,7 @@ class P extends React.Component{
         });
     }
     gotoUrl(){
-        superAgent.post('http://storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
+        superAgent.post('//storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
             window.location = '//wr.io/' + resp.id + '/Plus-WRIO-App/';
         });
     }
