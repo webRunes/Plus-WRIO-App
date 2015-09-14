@@ -1,24 +1,25 @@
+'use strict';
 var React = require('react'),
-    classNames = require('classnames');
+    classNames = require('classnames'),
+    superAgent = require('superagent');
 
-var P = React.createClass({
-    propTypes: {
-        data: React.PropTypes.object.isRequired
-    },
-    getInitialState: function () {
-        return {
-            active: false
-        };
-    },
-    active: function () {
+class P extends React.Component{
+    constructor(props) {
+        super(props);
+        this.state = {active: false};
+        this.active = this.active.bind(this);
+    }
+    active() {
         this.setState({
             active: !this.state.active
         });
-    },
-    gotoUrl: function(){
-        //window.location = 'http://' + this.props.data.url;
-    },
-    render: function () {
+    }
+    gotoUrl(){
+        superAgent.post('//storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
+            window.location = '//wr.io/' + resp.id + '/Plus-WRIO-App/';
+        });
+    }
+    render(){
         var className = classNames('new panel', {active: this.state.active});
         return (
             <li className={className}>
@@ -28,6 +29,10 @@ var P = React.createClass({
             </li>
         );
     }
-});
+}
+
+P.propTypes = {
+    data: React.PropTypes.object.isRequired
+};
 
 module.exports = P;
