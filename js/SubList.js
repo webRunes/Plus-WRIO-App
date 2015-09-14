@@ -1,0 +1,71 @@
+'use strict';
+var React = require('react'),
+    actions = require('./actions/jsonld'),
+    Item = require('./Item'),
+    classNames = require('classnames'),
+    sortBy = require('lodash.sortby');
+
+class SubList extends React.Component{
+    constructor(props){
+        super(props);
+        this.style = {
+            overflow: 'hidden',
+            height: ''
+        };
+        this.gotoUrl = this.gotoUrl.bind(this);
+    }
+    gotoUrl () {
+        window.location = '//' + this.props.data.url;
+    }
+    createItem () {
+        var children = this.props.data.children;
+        return sortBy(
+            Object.keys(children).map(function (name) {
+                return children[name];
+            }),
+            'order'
+        ).map(function (i) {
+                var list = this.props.data.url,
+                    del = function () {
+                        actions.del(list, i.url);
+                    };
+                if (i.active) {
+                    this.style.height = 'auto';
+                }
+                return <Item className="panel" del={del} data={i} key={i.url} />;
+            }, this);
+    }
+
+    render() {
+        this.style.height = this.props.data.active ? 'auto' : '0px';
+        var data = this.props.data,
+            name = data.name,
+            lis = this.createItem(),
+            rightContent = data.children ? Object.keys(data.children).length : <span onClick={this.del} className="glyphicon glyphicon-remove" />,
+            className = classNames({
+                panel: true,
+                active: data.active,
+                open: (data.children && (data.active || data.children.active))
+            });
+        return (
+            <li className={className}>
+                <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
+                    <span className="qty pull-right">{rightContent}</span>
+                    <span>{name}</span>
+                </a>
+                <div className="in" style={this.style}>
+                    <ul className="nav nav-pills nav-stacked sub">
+                        {lis}
+                    </ul>
+                </div>
+            </li>
+        );
+    }
+}
+
+SubList.propTypes = {
+    data: React.PropTypes.object.isRequired
+};
+
+module.exports = SubList;
+

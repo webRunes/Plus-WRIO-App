@@ -6,13 +6,8 @@ var React = require('react'),
 class P extends React.Component{
     constructor(props) {
         super(props);
+        this.state = {active: false};
         this.active = this.active.bind(this);
-        this.getInitialState = this.getInitialState.bind(this);
-    }
-    getInitialState() {
-        return {
-            active: false
-        };
     }
     active() {
         this.setState({
@@ -21,7 +16,7 @@ class P extends React.Component{
     }
     gotoUrl(){
         superAgent.post('http://storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
-            window.location = 'http://wr.io/' + resp.id + '/Plus-WRIO-App/';
+            window.location = '//wr.io/' + resp.id + '/Plus-WRIO-App/';
         });
     }
     render(){
