@@ -2,7 +2,6 @@
 var React = require('react'),
     actions = require('./actions/jsonld'),
     Item = require('./Item'),
-    classNames = require('classnames'),
     sortBy = require('lodash.sortby'),
     SubList = require('./SubList'),
     P = require('./P');
