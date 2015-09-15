@@ -1,4 +1,10 @@
 'use strict';
+var domain = '';
+if (process.env.DOMAIN == undefined) {
+    domain = 'wrioos.com';
+} else {
+    domain = process.env.DOMAIN;
+}
 var React = require('react'),
     classNames = require('classnames');
 
