@@ -1,6 +1,6 @@
 'use strict';
 var domain = '';
-if (process.env.DOMAIN == undefined) {
+if (process.env.DOMAIN === undefined) {
     domain = 'wrioos.com';
 } else {
     domain = process.env.DOMAIN;
