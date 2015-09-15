@@ -8,16 +8,23 @@ class P extends React.Component{
         super(props);
         this.state = {active: false};
         this.active = this.active.bind(this);
+        this.gotoUrl= this.gotoUrl.bind(this);
     }
     active() {
         this.setState({
             active: !this.state.active
         });
     }
+    componentDidMount () {
+        window.addEventListener('message', function (e) {
+            if (e.origin == 'http://login.' + domain) {
+                var jsmsg = JSON.parse(e.data);
+                this.setState({user_id : jsmsg.profile.id});
+            }
+        }.bind(this));
+    }
     gotoUrl(){
-        superAgent.post('//storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
-            window.location = '//wr.io/' + resp.id + '/Plus-WRIO-App/';
-        });
+        window.location = '//wr.io/' + this.state.user_id + '/Plus-WRIO-App/';
     }
     render(){
         var className = classNames('new panel', {active: this.state.active});
