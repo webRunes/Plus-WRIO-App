@@ -1,23 +1,35 @@
 'use strict';
+var domain = '';
+if (process.env.DOMAIN === undefined) {
+    domain = 'wrioos.com';
+} else {
+    domain = process.env.DOMAIN;
+}
 var React = require('react'),
-    classNames = require('classnames'),
-    superAgent = require('superagent');
+    classNames = require('classnames');
 
 class P extends React.Component{
     constructor(props) {
         super(props);
         this.state = {active: false};
         this.active = this.active.bind(this);
+        this.gotoUrl = this.gotoUrl.bind(this);
     }
     active() {
         this.setState({
             active: !this.state.active
         });
     }
+    componentDidMount () {
+        window.addEventListener('message', function (e) {
+            if (e.origin === '//login.' + domain) {
+                var jsmsg = JSON.parse(e.data);
+                this.setState({userId: jsmsg.profile.id});
+            }
+        }.bind(this));
+    }
     gotoUrl(){
-        superAgent.post('//storage.wrioos.com/api/get_profile').withCredentials().end(function(resp){
-            window.location = '//wr.io/' + resp.id + '/Plus-WRIO-App/';
-        });
+        window.location = '//wr.io/' + this.state.userId + '/Plus-WRIO-App/';
     }
     render(){
         var className = classNames('new panel', {active: this.state.active});

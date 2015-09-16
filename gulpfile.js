@@ -5,6 +5,7 @@ var fs = require('fs');
 var wrapper = require('gulp-wrapper');
 var uglify = require ('gulp-uglify');
 var rename = require("gulp-rename");
+var babelify = require('babelify');
 
 console.log(uglify);
 
@@ -14,16 +15,16 @@ gulp.task('storage-hub', function() {
         .pipe(browserify({
             debug:true
         }))
-    .pipe(uglify())
-    .pipe(wrapper({
-        header: '<script>',
-        footer: '</script>'
-    }))
-    .pipe(rename('storageHub.htm'))
-    .pipe(gulp.dest('./widget/'))
-    .on('error', function(err) {
-        console.log('Build error:', err.toString());
-    })
+        .pipe(uglify())
+        .pipe(wrapper({
+            header: '<script>',
+            footer: '</script>'
+        }))
+        .pipe(rename('storageHub.htm'))
+        .pipe(gulp.dest('./widget/'))
+        .on('error', function(err) {
+            console.log('Build error:', err.toString());
+        })
 });
 
 
