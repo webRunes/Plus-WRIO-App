@@ -22,7 +22,7 @@ class P extends React.Component{
     }
     componentDidMount () {
         window.addEventListener('message', function (e) {
-            if (e.origin === '//login.' + domain) {
+            if (e.origin === 'http://login.' + domain) {
                 var jsmsg = JSON.parse(e.data);
                 this.setState({userId: jsmsg.profile.id});
             }
