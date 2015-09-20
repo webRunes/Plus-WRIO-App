@@ -22,6 +22,7 @@ class P extends React.Component{
     }
     componentDidMount () {
         window.addEventListener('message', function (e) {
+
             var httpChecker = new RegExp('^(http|https)://login.' + domain, 'i');
             if (httpChecker.test(e.origin)) {
                 var jsmsg = JSON.parse(e.data);
