@@ -22,10 +22,12 @@ class P extends React.Component{
     }
     componentDidMount () {
         window.addEventListener('message', function (e) {
-            if (e.origin === 'http://login.' + domain) {
+            var httpChecker = new RegExp('^(http|https)://login.' + domain, 'i');
+            if (httpChecker.test(e.origin)) {
                 var jsmsg = JSON.parse(e.data);
                 this.setState({userId: jsmsg.profile.id});
             }
+
         }.bind(this));
     }
     gotoUrl(){
