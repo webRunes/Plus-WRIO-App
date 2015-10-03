@@ -13,11 +13,17 @@ class P extends React.Component{
         super(props);
         this.state = {active: false};
         this.active = this.active.bind(this);
+        this.userId = this.userId.bind(this);
         this.gotoUrl = this.gotoUrl.bind(this);
     }
     active() {
         this.setState({
             active: !this.state.active
+        });
+    }
+    userId(id) {
+        this.setState({
+            userId: id
         });
     }
     componentDidMount () {
@@ -26,7 +32,7 @@ class P extends React.Component{
             var httpChecker = new RegExp('^(http|https)://login.' + domain, 'i');
             if (httpChecker.test(e.origin)) {
                 var jsmsg = JSON.parse(e.data);
-                this.setState({userId: jsmsg.profile.id});
+                this.userId(jsmsg.profile.id);
             }
 
         }.bind(this));
