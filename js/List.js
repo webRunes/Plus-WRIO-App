@@ -10,11 +10,6 @@ class List extends React.Component{
     constructor(props){
         super(props);
     }
-    get propTypes() {
-        return {
-            data: React.PropTypes.object.isRequired
-        };
-    }
     render() {
         var lis = sortBy(
             Object.keys(this.props.data).map(function (name) {
@@ -28,15 +23,19 @@ class List extends React.Component{
                 var del = function () {
                     actions.del(item.url);
                 };
-                return <Item className="panel" del={del} data={item} listName={item.name} key={item.url} />;
+                return <Item className='panel' del={del} data={item} listName={item.name} key={item.url} />;
             }, this);
         return (
-            <ul id="nav-accordion" className="nav navbar-var">
+            <ul id='nav-accordion' className='nav navbar-var'>
                 {lis}
                 <P data={{name: 'plus'}} />
             </ul>
         );
     }
 }
+
+List.propTypes = {
+    data: React.PropTypes.object.isRequired
+};
 
 module.exports = List;
