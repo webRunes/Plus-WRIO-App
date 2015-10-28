@@ -6,7 +6,6 @@ var storeMenu = Reflux.createStore({
     init: function () {
         this.listenTo(menuActions.toggleMenu, this.onToggleMenu);
         this.listenTo(menuActions.showSidebar, this.onShowSidebar);
-        console.log('init', this)
     },
     onCallAi: function () {
 
@@ -18,11 +17,9 @@ var storeMenu = Reflux.createStore({
 
     },
     onToggleMenu: function (data) {
-        console.log('Store onToggle', data)
         this.trigger(data);
     },
     onShowSidebar: function (data) {
-        console.log('Store onShowSidebar', data)
         this.trigger(data);
     }
 });
