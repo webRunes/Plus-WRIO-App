@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react'),
-    Reflux = require('Reflux'),
+    Reflux = require('reflux'),
     store = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     ActionMenu = require('./actions/menu'),
