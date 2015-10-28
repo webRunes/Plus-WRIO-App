@@ -45,8 +45,8 @@ class Plus extends React.Component{
             'active': this.state.active
         });
         return (
-            <nav className={className} unselectable='on'>
-                <div className='navbar-header' id='leftMenuwrp'>
+            <nav className={className} unselectable="on">
+                <div className="navbar-header" id="leftMenuwrp">
                     <List data={this.state.jsonld} />
                 </div>
             </nav>

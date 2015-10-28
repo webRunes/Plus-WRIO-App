@@ -23,10 +23,10 @@ class List extends React.Component{
                 var del = function () {
                     actions.del(item.url);
                 };
-                return <Item className='panel' del={del} data={item} listName={item.name} key={item.url} />;
+                return <Item className="panel" del={del} data={item} listName={item.name} key={item.url} />;
             }, this);
         return (
-            <ul id='nav-accordion' className='nav navbar-var'>
+            <ul id="nav-accordion" className="nav navbar-var">
                 {lis}
                 <P data={{name: 'plus'}} />
             </ul>
