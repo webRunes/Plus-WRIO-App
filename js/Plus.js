@@ -13,7 +13,12 @@ class Plus extends React.Component{
         super(props);
         this.onStateChange = this.onStateChange.bind(this);
         this.onToggleMenu = this.onToggleMenu.bind(this);
+        this.state = {
+            active: false,
+            jsonld: false
+        };
     }
+
     onStateChange (jsonld) {
         this.setState({
             jsonld: jsonld
@@ -29,12 +34,15 @@ class Plus extends React.Component{
     componentDidMount() {
         this.unsubscribe = store.listen(this.onStateChange);
         this.unsubscribe1 = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
+        //ActionMenu.toggleMenu(this.state.active);
         actions.read();
     }
+
     componentWillUnmount () {
         this.unsubscribe();
         this.unsubscribe1() ;
     }
+
     render() {
         if (this.state === null) {
             return null;
