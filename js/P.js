@@ -41,13 +41,20 @@ class P extends React.Component{
         window.location = '//wr.io/' + this.state.userId + '/Plus-WRIO-App/';
     }
     render(){
-        var className = classNames('new panel', {active: this.state.active});
+        var className = classNames(
+            'new panel',
+            {
+                active: this.state.active,
+                fixed: this.props.data.fixed
+            }
+        );
+
         return (
-            <li className={className}>
+            <div className={className}>
                 <a onClick={this.gotoUrl} style={{width: '100%'}} className="collapsed">
                     <span className="glyphicon glyphicon-plus"></span>
                 </a>
-            </li>
+            </div>
         );
     }
 }
