@@ -1,12 +1,13 @@
 'use strict';
 var React = require('react'),
     Reflux = require('reflux'),
-    store = require('./stores/jsonld'),
+    StoreLd = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     ActionMenu = require('./actions/menu'),
     StoreMenu = require('./stores/menu'),
     classNames = require('classnames'),
-    List = require('./List');
+    List = require('./List'),
+    P = require('./P');
 
 class Plus extends React.Component{
     constructor (props) {
@@ -15,7 +16,8 @@ class Plus extends React.Component{
         this.onToggleMenu = this.onToggleMenu.bind(this);
         this.state = {
             active: false,
-            jsonld: false
+            jsonld: {},
+            fixed:  false
         };
     }
 
@@ -25,38 +27,40 @@ class Plus extends React.Component{
         });
     }
 
-    onToggleMenu (data) {
+    onToggleMenu (data, fixed) {
         this.setState({
-            active: data
+            active: data,
+            fixed:  fixed
         });
     }
 
     componentDidMount() {
-        this.unsubscribe = store.listen(this.onStateChange);
-        this.unsubscribe1 = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
-        //ActionMenu.toggleMenu(this.state.active);
+        this.listenStoreLd = StoreLd.listen(this.onStateChange);
+        this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
         actions.read();
     }
 
     componentWillUnmount () {
-        this.unsubscribe();
-        this.unsubscribe1() ;
+        this.listenStoreLd();
+        this.listenStoreMenuToggle();
     }
 
     render() {
         if (this.state === null) {
             return null;
         }
-
         var className = classNames({
-            'navbar-collapse in unselectable': true,
-            'active': this.state.active
-        });
+                'navbar-collapse in unselectable': true,
+                'active': this.state.active,
+                'fixed': this.state.fixed
+            });
+
         return (
             <nav className={className} unselectable="on">
                 <div className="navbar-header" id="leftMenuwrp">
                     <List data={this.state.jsonld} />
                 </div>
+                <P data={{ name: 'plus' }} />
             </nav>
         );
     }

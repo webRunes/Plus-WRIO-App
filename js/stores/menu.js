@@ -16,8 +16,14 @@ var storeMenu = Reflux.createStore({
     onFullScreen: function () {
 
     },
-    onToggleMenu: function (data) {
-        this.trigger(data);
+    onToggleMenu: function (data, fixed) {
+        if(fixed == null || fixed == undefined || fixed == false){
+            var fixed = fixed;
+            fixed = false;
+            this.trigger(data, fixed);
+        }else{
+            this.trigger(data, fixed);
+        }
     },
     onShowSidebar: function (data) {
         this.trigger(data);
