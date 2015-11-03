@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react'),
     Reflux = require('reflux'),
-    store = require('./stores/jsonld'),
+    StoreLd = require('./stores/jsonld'),
     actions = require('./actions/jsonld'),
     ActionMenu = require('./actions/menu'),
     StoreMenu = require('./stores/menu'),
@@ -35,14 +35,14 @@ class Plus extends React.Component{
     }
 
     componentDidMount() {
-        this.unsubscribe = store.listen(this.onStateChange);
-        this.unsubscribe1 = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
+        this.listenStoreLd = StoreLd.listen(this.onStateChange);
+        this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
         actions.read();
     }
 
     componentWillUnmount () {
-        this.unsubscribe();
-        this.unsubscribe1() ;
+        this.listenStoreLd();
+        this.listenStoreMenuToggle();
     }
 
     render() {
