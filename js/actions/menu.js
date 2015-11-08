@@ -5,7 +5,8 @@ var menuAction = Reflux.createActions([
     'logout',
     'fullScreen',
     'toggleMenu',
-    'showSidebar'
+    'showSidebar',
+    'resize'
 ]);
 
 module.exports = menuAction;

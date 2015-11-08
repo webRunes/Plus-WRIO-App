@@ -34,6 +34,10 @@ class Plus extends React.Component{
         });
     }
 
+    onResize (height) {
+        console.log(height);
+    }
+
     componentDidMount() {
         this.listenStoreLd = StoreLd.listen(this.onStateChange);
         this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
@@ -42,7 +46,7 @@ class Plus extends React.Component{
 
     componentWillUnmount () {
         this.listenStoreLd();
-        this.listenStoreMenuToggle();
+        this.listenStoreMenuResize();
     }
 
     render() {
@@ -54,10 +58,12 @@ class Plus extends React.Component{
                 'active': this.state.active,
                 'fixed': this.state.fixed
             });
-
+        var height = {
+            height: this.props.height
+        };
         return (
             <nav className={className} unselectable="on">
-                <div className="navbar-header" id="leftMenuwrp">
+                <div className="navbar-header" id="leftMenuwrp" style={height}>
                     <List data={this.state.jsonld} />
                 </div>
                 <P data={{ name: 'plus' }} />
@@ -65,5 +71,11 @@ class Plus extends React.Component{
         );
     }
 }
+
+
+Plus.propTypes = {
+    height: React.PropTypes.object.isRequired
+};
+
 
 module.exports = Plus;
