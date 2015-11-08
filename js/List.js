@@ -46,7 +46,7 @@ class List extends React.Component{
             if (item.children) {
                 return <SubList data={item} key={item.url} />;
             }
-            var del = function () {
+            var del = function (){
                 actions.del(item.url);
             };
             return <Item className="panel" del={del} onClick={List.clickOnItem} data={item} listName={item.name} key={item.url} />;
@@ -62,6 +62,8 @@ class List extends React.Component{
     }
 
     render() {
+
+        ActionMenu.resize(this.list().length * 40);
 
         var height = {
             height: 'auto'
