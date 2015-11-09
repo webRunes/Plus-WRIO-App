@@ -34,10 +34,6 @@ class Plus extends React.Component{
         });
     }
 
-    onResize (height) {
-        console.log(height);
-    }
-
     componentDidMount() {
         this.listenStoreLd = StoreLd.listen(this.onStateChange);
         this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
@@ -54,11 +50,10 @@ class Plus extends React.Component{
             return null;
         }
         var className = classNames({
-                'navbar-collapse in unselectable': true,
-                'active': this.state.active,
-                'fixed': this.state.fixed
-            });
-        var height = {
+            'navbar-collapse in unselectable': true,
+            'active': this.state.active,
+            'fixed': this.state.fixed
+        }), height = {
             height: this.props.height
         };
         return (

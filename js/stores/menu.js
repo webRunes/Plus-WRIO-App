@@ -7,6 +7,7 @@ var storeMenu = Reflux.createStore({
         this.listenTo(menuActions.toggleMenu, this.onToggleMenu);
         this.listenTo(menuActions.showSidebar, this.onShowSidebar);
         this.listenTo(menuActions.resize, this.onResize);
+        this.listenTo(menuActions.windowResize, this.onWindowResize);
     },
     onCallAi: function () {
 
@@ -19,9 +20,7 @@ var storeMenu = Reflux.createStore({
     },
     onToggleMenu: function (data, fixed) {
         if(fixed == null || fixed == undefined || fixed == false){
-            var fixed = fixed;
-            fixed = false;
-            this.trigger(data, fixed);
+            this.trigger(data, false);
         }else{
             this.trigger(data, fixed);
         }
@@ -31,6 +30,9 @@ var storeMenu = Reflux.createStore({
     },
     onResize: function(height){
         this.trigger(height);
+    },
+    onWindowResize: function(width, height){
+        this.trigger(width, height);
     }
 });
 

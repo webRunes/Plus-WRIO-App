@@ -13,8 +13,10 @@ class List extends React.Component{
         super(props);
         this.onToggleMenu = this.onToggleMenu.bind(this);
         this.state = {
-            fixed: false
+            fixed: false,
+            resize: false
         };
+        this.onWindowResize = this.onWindowResize.bind(this);
     }
 
     static clickOnItem() {
@@ -25,7 +27,7 @@ class List extends React.Component{
 
         var fixed;
 
-        if(window.innerHeight < this.list().length * 41 + 93 && data){
+        if(window.innerHeight < this.list().length * 40 + 93 && data){
             fixed = true;
         } else {
             fixed = false;
@@ -36,9 +38,15 @@ class List extends React.Component{
         });
     }
 
+    onWindowResize (width, height) {
+        this.setState({
+            resize: true
+        });
+        ActionMenu.resize(this.list().length * 40);
+    }
+
     list() {
-        var lis;
-        return lis = sortBy(
+        return sortBy(
             Object.keys(this.props.data).map(function (name) {
                 return this.props.data[name];
             }, this), 'order'
@@ -54,22 +62,22 @@ class List extends React.Component{
     }
 
     componentDidMount() {
-        this.unsubscribe = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
+        this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
+        this.listenStoreMenuWindowResize = StoreMenu.listenTo(ActionMenu.windowResize, this.onWindowResize);
     }
 
     componentWillUnmount () {
-        this.unsubscribe() ;
+        this.listenStoreMenuToggle() ;
+        this.listenStoreMenuWindowResize() ;
     }
 
     render() {
-
-        ActionMenu.resize(this.list().length * 40);
 
         var height = {
             height: 'auto'
         };
 
-        if(this.state.fixed == true){
+        if(this.state.fixed == true || window.innerHeight - 93 < this.list().length * 40){
             height = {
                 height: window.innerHeight - 93
             };
