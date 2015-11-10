@@ -77,7 +77,7 @@ class List extends React.Component{
             height: 'auto'
         };
 
-        if(this.state.fixed == true || window.innerHeight - 93 < this.list().length * 40){
+        if(window.innerWidth < 767 && (this.state.fixed == true || window.innerHeight - 93 < this.list().length * 40)){
             height = {
                 height: window.innerHeight - 93
             };
