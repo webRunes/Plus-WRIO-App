@@ -12,6 +12,10 @@ script  : npm start
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$(git log -1 --format='%an')" == "Alexey Anshakov" ]; then npm run bumpVersion; fi
 
+before_deploy:
+- gem install mime-types -v 2.6.2
+
+
 deploy:
   - provider: s3
     access_key_id:
