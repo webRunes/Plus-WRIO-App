@@ -1,17 +1,15 @@
 var express = require('express');
 var app = require("./wrio_app.js")
 	.init(express);
-var server = require('http')
-	.createServer(app)
-	.listen(1234);
+
+var nconf = require('./wrio_nconf.js');
 
 var passport = require('passport');
 var GooglePlusStrategy = require('passport-google-oauth')
 	.OAuth2Strategy;
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
-var nconf = require("./wrio_nconf.js")
-	.init();
+var nconf = require("./wrio_nconf.js");
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -25,6 +23,12 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
+
+var server = require('http')
+	.createServer(app)
+	.listen(nconf.get("server:port"), function(err, res) {
+		console.log("app running on port " + nconf.get("server:port"));
+	});
 
 passport.serializeUser(function(user, done) {
 	done(null, user);
@@ -76,9 +80,6 @@ app.get('/logout', function(request, response) {
 	request.logout();
 	response.redirect('/');
 });
-
-app.listen(3000);
-console.log("app running on port 3000");
 
 function ensureAuthenticated(request, response, next) {
 	if (request.isAuthenticated()) {
