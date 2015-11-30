@@ -32,7 +32,10 @@ class P extends React.Component{
             var httpChecker = new RegExp('^(http|https)://login.' + domain, 'i');
             if (httpChecker.test(e.origin)) {
                 var jsmsg = JSON.parse(e.data);
-                this.userId(jsmsg.profile.id);
+                if (jsmsg.profile) {
+                    this.userId(jsmsg.profile.id);
+                }
+
             }
 
         }.bind(this));
