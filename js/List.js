@@ -42,7 +42,6 @@ class List extends React.Component{
         this.setState({
             resize: true
         });
-        ActionMenu.resize(this.list().length * 40);
     }
 
     list() {
@@ -82,7 +81,7 @@ class List extends React.Component{
                 height: window.innerHeight - 93
             };
         }
-
+        ActionMenu.resize(this.list().length * 40);
         return (
             <ul ref="nav" id="nav-accordion" className="nav navbar-var" style={height}>
                 {this.list()}
