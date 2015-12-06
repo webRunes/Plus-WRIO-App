@@ -18,7 +18,7 @@ class P extends React.Component{
     }
     active() {
         this.setState({
-            active: !this.state.active
+            active: true
         });
     }
     userId(id) {
@@ -42,6 +42,7 @@ class P extends React.Component{
     }
     gotoUrl(){
         window.location = '//wr.io/' + this.state.userId + '/Plus-WRIO-App/';
+        this.active();
     }
     render(){
         var className = classNames(
