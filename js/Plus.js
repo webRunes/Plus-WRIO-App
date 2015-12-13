@@ -7,6 +7,7 @@ var React = require('react'),
     StoreMenu = require('./stores/menu'),
     classNames = require('classnames'),
     List = require('./List'),
+    sortBy = require('lodash.sortby'),
     P = require('./P');
 
 class Plus extends React.Component{
@@ -45,6 +46,20 @@ class Plus extends React.Component{
         this.listenStoreMenuResize();
     }
 
+    static checkActive(data) {
+
+        if(data){
+            var top = Object.keys(data).filter(function(name){
+                return data[name].active == true;
+            }, this);
+
+            return !(top.length == 1);
+
+        }else{
+            return false;
+        }
+    }
+
     render() {
         if (this.state === null) {
             return null;
@@ -56,12 +71,15 @@ class Plus extends React.Component{
         }), height = {
             height: this.props.height
         };
+
+
+
         return (
             <nav className={className} unselectable="on">
                 <div className="navbar-header" id="leftMenuwrp" style={height}>
                     <List data={this.state.jsonld} />
                 </div>
-                <P data={{ name: 'plus' }} />
+                <P data={{ name: 'plus' }} active={Plus.checkActive(this.state.jsonld)} />
             </nav>
         );
     }
