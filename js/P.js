@@ -11,20 +11,18 @@ var React = require('react'),
 class P extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {active: false};
-        this.active = this.active.bind(this);
+        this.state = {
+            userId: ''
+        };
         this.userId = this.userId.bind(this);
         this.gotoUrl = this.gotoUrl.bind(this);
     }
-    active() {
-        this.setState({
-            active: true
-        });
-    }
+
     userId(id) {
         this.setState({
             userId: id
         });
+
     }
     componentDidMount () {
         window.addEventListener('message', function (e) {
@@ -40,15 +38,16 @@ class P extends React.Component{
 
         }.bind(this));
     }
+
     gotoUrl(){
         window.location = '//wr.io/' + this.state.userId + '/Plus-WRIO-App/';
-        this.active();
     }
+
     render(){
         var className = classNames(
             'new panel',
             {
-                active: this.state.active,
+                active: this.props.active,
                 fixed: this.props.data.fixed
             }
         );
@@ -64,7 +63,8 @@ class P extends React.Component{
 }
 
 P.propTypes = {
-    data: React.PropTypes.object.isRequired
+    data: React.PropTypes.object.isRequired,
+    active: React.PropTypes.object.isRequired
 };
 
 module.exports = P;
