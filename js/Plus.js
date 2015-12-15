@@ -41,9 +41,16 @@ class Plus extends React.Component{
         actions.read();
     }
 
+    componentDidUpdate() {
+        if(document.getElementById('tabScrollPosition')){
+            document.getElementById('tabScrollPosition').scrollTop = !!localStorage.getItem('tabScrollPosition') ? localStorage.getItem('tabScrollPosition') : 0;
+        }
+    }
+
     componentWillUnmount () {
         this.listenStoreLd();
         this.listenStoreMenuResize();
+        localStorage.removeItem('tabScrollPosition');
     }
 
     static checkActive(data) {
@@ -72,11 +79,9 @@ class Plus extends React.Component{
             height: this.props.height
         };
 
-
-
         return (
             <nav className={className} unselectable="on">
-                <div className="navbar-header" id="leftMenuwrp" style={height}>
+                <div className="navbar-header" id="tabScrollPosition" style={height}>
                     <List data={this.state.jsonld} />
                 </div>
                 <P data={{ name: 'plus' }} active={Plus.checkActive(this.state.jsonld)} />
