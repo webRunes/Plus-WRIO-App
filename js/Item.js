@@ -23,7 +23,7 @@ class Item extends React.Component{
             data = this.props.data,
             name = data.name;
         return (
-            <li tabindex="1" className={className}>
+            <li tabIndex="1" className={className}>
                 <a onClick={this.props.del} className="pull-right">
                     <span className="glyphicon glyphicon-remove" />
                 </a>
