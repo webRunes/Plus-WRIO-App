@@ -49,14 +49,14 @@ class List extends React.Component{
             Object.keys(this.props.data).map(function (name) {
                 return this.props.data[name];
             }, this), 'order'
-        ).map(function (item) {
+        ).map(function (item, i) {
             if (item.children) {
                 return <SubList data={item} key={item.url} />;
             }
             var del = function (){
                 actions.del(item.url);
             };
-            return <Item className="panel" del={del} onClick={List.clickOnItem} data={item} listName={item.name} key={item.url} />;
+            return <Item className="panel" del={del} onClick={List.clickOnItem} tabScrollPosition={this.props.tabScrollPosition} data={item} listName={item.name} key={item.url} />;
         }, this);
     }
 
@@ -83,7 +83,7 @@ class List extends React.Component{
         }
         ActionMenu.resize(this.list().length * 40);
         return (
-            <ul ref="nav" id="nav-accordion" className="nav navbar-var" style={height}>
+            <ul id="nav-accordion" className="nav navbar-var" style={height}>
                 {this.list()}
             </ul>
         );
@@ -91,7 +91,8 @@ class List extends React.Component{
 }
 
 List.propTypes = {
-    data: React.PropTypes.object.isRequired
+    data: React.PropTypes.object.isRequired,
+    tabScrollPosition: React.PropTypes.object.isRequired
 };
 
 module.exports = List;
