@@ -6,7 +6,7 @@ var menuAction = Reflux.createActions([
     'fullScreen',
     'toggleMenu',
     'showSidebar',
-    'resize',
+    'tabsSize',
     'windowResize'
 ]);
 
