@@ -12,11 +12,13 @@ class List extends React.Component{
     constructor(props){
         super(props);
         this.onToggleMenu = this.onToggleMenu.bind(this);
+        this.onWindowResize = this.onWindowResize.bind(this);
+        this.tabsSize = this.tabsSize.bind(this);
         this.state = {
             fixed: false,
-            resize: false
+            resize: false,
+            tabsSize: 0
         };
-        this.onWindowResize = this.onWindowResize.bind(this);
     }
 
     static clickOnItem() {
@@ -44,7 +46,14 @@ class List extends React.Component{
         });
     }
 
+    tabsSize (length) {
+        this.setState({
+            tabsSize: length
+        });
+    }
+
     list() {
+        var del;
         return sortBy(
             Object.keys(this.props.data).map(function (name) {
                 return this.props.data[name];
@@ -53,7 +62,7 @@ class List extends React.Component{
             if (item.children) {
                 return <SubList data={item} key={item.url} />;
             }
-            var del = function (){
+            del = function (){
                 actions.del(item.url);
             };
             return <Item className="panel" del={del} onClick={List.clickOnItem} tabScrollPosition={this.props.tabScrollPosition} data={item} listName={item.name} key={item.url} />;
@@ -63,15 +72,23 @@ class List extends React.Component{
     componentDidMount() {
         this.listenStoreMenuToggle = StoreMenu.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
         this.listenStoreMenuWindowResize = StoreMenu.listenTo(ActionMenu.windowResize, this.onWindowResize);
+        this.tabsSize(this.list().length);
     }
 
-    componentWillUnmount () {
-        this.listenStoreMenuToggle() ;
-        this.listenStoreMenuWindowResize() ;
+    shouldComponentUpdate(nextProp, nextState) {
+
+        if(this.state.tabsSize != this.list().length * 40){
+            this.setState({
+                tabsSize: this.list().length * 40
+            });
+            ActionMenu.tabsSize(this.list().length * 40);
+            return false;
+        }else{
+            return true;
+        };
     }
 
     render() {
-
         var height = {
             height: 'auto'
         };
@@ -81,7 +98,6 @@ class List extends React.Component{
                 height: window.innerHeight - 93
             };
         }
-        ActionMenu.resize(this.list().length * 40);
         return (
             <ul id="nav-accordion" className="nav navbar-var" style={height}>
                 {this.list()}
