@@ -49,11 +49,9 @@ class Plus extends React.Component{
 
     componentWillUnmount () {
         this.listenStoreLd();
-        this.listenStoreMenuResize();
-        localStorage.removeItem('tabScrollPosition');
     }
 
-    static checkActive(data) {
+        static checkActive(data) {
 
         if(data){
             var top = Object.keys(data).filter(function(name){
