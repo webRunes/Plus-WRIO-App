@@ -28,12 +28,12 @@ deploy:
     skip_cleanup: true
     on:
       branch: production
-  - provider: opsworks
-    access_key_id:
-      secure: e/zx9ISltVMVTx6JDk+ByGSmt7rAbX51WL7e5gE513JpLvaKcalmE7mW/fxGBeyxumyFHHGiwP4O16+5e3oCMgYynOOTIH0XTxFBAknNoY5DE2y1V/Hu7x9qGwKhdvOb2vaXbgL7FRETocrr5Derrlc83iMjDq5LxZ63gPZrtq0=
-    secret_access_key:
-      secure: ZhVBTUdoEP7GJvcyXweUVPi6KSsGmhx58Y4OP01zR8XyJnhARu1Xxf5nmWM+IJjx1wveNLC0itxaCLWwj8ZB27DCHBnpbBVSZfs5ft+0vV3RplEfF39MJln+rWMkc+CPZR909aEE4dPurMDPjC3hNE66RF9DymK7GU0YNHSVO6A=
-    app-id: 450f10a2-c4e1-43ea-94da-dd0333b98757
+#  - provider: opsworks
+#    access_key_id:
+#      secure: e/zx9ISltVMVTx6JDk+ByGSmt7rAbX51WL7e5gE513JpLvaKcalmE7mW/fxGBeyxumyFHHGiwP4O16+5e3oCMgYynOOTIH0XTxFBAknNoY5DE2y1V/Hu7x9qGwKhdvOb2vaXbgL7FRETocrr5Derrlc83iMjDq5LxZ63gPZrtq0=
+#    secret_access_key:
+#      secure: ZhVBTUdoEP7GJvcyXweUVPi6KSsGmhx58Y4OP01zR8XyJnhARu1Xxf5nmWM+IJjx1wveNLC0itxaCLWwj8ZB27DCHBnpbBVSZfs5ft+0vV3RplEfF39MJln+rWMkc+CPZR909aEE4dPurMDPjC3hNE66RF9DymK7GU0YNHSVO6A=
+#    app-id: 450f10a2-c4e1-43ea-94da-dd0333b98757
     on:
       branch: production
     
