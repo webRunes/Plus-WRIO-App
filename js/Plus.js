@@ -7,6 +7,7 @@ var React = require('react'),
     StoreMenu = require('./stores/menu'),
     classNames = require('classnames'),
     List = require('./List'),
+    sortBy = require('lodash.sortby'),
     P = require('./P');
 
 class Plus extends React.Component{
@@ -40,9 +41,28 @@ class Plus extends React.Component{
         actions.read();
     }
 
+    componentDidUpdate() {
+        if(document.getElementById('tabScrollPosition')){
+            document.getElementById('tabScrollPosition').scrollTop = !!localStorage.getItem('tabScrollPosition') ? localStorage.getItem('tabScrollPosition') : 0;
+        }
+    }
+
     componentWillUnmount () {
         this.listenStoreLd();
-        this.listenStoreMenuResize();
+    }
+
+        static checkActive(data) {
+
+        if(data){
+            var top = Object.keys(data).filter(function(name){
+                return data[name].active == true;
+            }, this);
+
+            return !(top.length == 1);
+
+        }else{
+            return false;
+        }
     }
 
     render() {
@@ -56,12 +76,13 @@ class Plus extends React.Component{
         }), height = {
             height: this.props.height
         };
+
         return (
             <nav className={className} unselectable="on">
-                <div className="navbar-header" id="leftMenuwrp" style={height}>
+                <div className="navbar-header" id="tabScrollPosition" style={height}>
                     <List data={this.state.jsonld} />
                 </div>
-                <P data={{ name: 'plus' }} />
+                <P data={{ name: 'plus' }} active={Plus.checkActive(this.state.jsonld)} />
             </nav>
         );
     }

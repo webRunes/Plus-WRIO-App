@@ -1,13 +1,13 @@
 var Reflux = require('reflux'),
     tools = require('./tools'),
-    menuActions = require('../actions/menu.js');
+    ActionMenu = require('../actions/menu.js');
 
 var storeMenu = Reflux.createStore({
     init: function () {
-        this.listenTo(menuActions.toggleMenu, this.onToggleMenu);
-        this.listenTo(menuActions.showSidebar, this.onShowSidebar);
-        this.listenTo(menuActions.resize, this.onResize);
-        this.listenTo(menuActions.windowResize, this.onWindowResize);
+        this.listenTo(ActionMenu.toggleMenu, this.onToggleMenu);
+        this.listenTo(ActionMenu.showSidebar, this.onShowSidebar);
+        this.listenTo(ActionMenu.tabsSize, this.onTabsSize);
+        this.listenTo(ActionMenu.windowResize, this.onWindowResize);
     },
     onCallAi: function () {
 
@@ -28,7 +28,7 @@ var storeMenu = Reflux.createStore({
     onShowSidebar: function (data) {
         this.trigger(data);
     },
-    onResize: function(height){
+    onTabsSize: function(height){
         this.trigger(height);
     },
     onWindowResize: function(width, height){
