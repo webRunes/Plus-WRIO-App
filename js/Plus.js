@@ -42,24 +42,30 @@ class Plus extends React.Component{
     }
 
     componentDidUpdate() {
-        if(document.getElementById('tabScrollPosition')){
-            document.getElementById('tabScrollPosition').scrollTop = !!localStorage.getItem('tabScrollPosition') ? localStorage.getItem('tabScrollPosition') : 0;
-        }
+        document.getElementById('tabScrollPosition').scrollTop = Plus.checkActiveHeight(this.state.jsonld);
     }
 
     componentWillUnmount () {
         this.listenStoreLd();
     }
 
-        static checkActive(data) {
+    static checkActiveHeight(data) {
+        if(Object.keys(data).length > 0){
+            return (Object.keys(data).map(function(name, i){
+                  return (data[name].active == true)? i : null;
+              }, this).filter(Number)[0] + 1) * 40;
+        }else{
+            return 0;
+        }
+    }
 
+    static checkActive(data) {
         if(data){
             var top = Object.keys(data).filter(function(name){
                 return data[name].active == true;
             }, this);
 
             return !(top.length == 1);
-
         }else{
             return false;
         }
@@ -76,13 +82,14 @@ class Plus extends React.Component{
         }), height = {
             height: this.props.height
         };
+        var activePlus = Plus.checkActive(this.state.jsonld);
 
         return (
             <nav className={className} unselectable="on">
                 <div className="navbar-header" id="tabScrollPosition" style={height}>
-                    <List data={this.state.jsonld} />
+                    <List data={this.state.jsonld} height={this.props.height} />
                 </div>
-                <P data={{ name: 'plus' }} active={Plus.checkActive(this.state.jsonld)} />
+                <P data={{ name: 'plus' }} active={activePlus} />
             </nav>
         );
     }
@@ -90,7 +97,7 @@ class Plus extends React.Component{
 
 
 Plus.propTypes = {
-    height: React.PropTypes.object.isRequired
+    height: React.PropTypes.node.isRequired
 };
 
 
