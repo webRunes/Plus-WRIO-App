@@ -11,13 +11,14 @@ var React = require('react'),
 class List extends React.Component{
     constructor(props){
         super(props);
+
         this.onToggleMenu = this.onToggleMenu.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
         this.tabsSize = this.tabsSize.bind(this);
         this.state = {
             fixed: false,
             resize: false,
-            tabsSize: 0
+            tabsSize: true
         };
     }
 
@@ -26,17 +27,8 @@ class List extends React.Component{
     }
 
     onToggleMenu (data, fixed) {
-
-        var fixed;
-
-        if(window.innerHeight < this.list().length * 40 + 93 && data){
-            fixed = true;
-        } else {
-            fixed = false;
-        }
-
         this.setState({
-            fixed:  fixed
+            fixed:  (window.innerHeight < this.list().length * 40 + 93 && data) ? true : false
         });
     }
 
@@ -75,17 +67,19 @@ class List extends React.Component{
         this.tabsSize(this.list().length);
     }
 
-    shouldComponentUpdate(nextProp, nextState) {
+    shouldComponentUpdate(newProps) {
+        if(newProps.height != 'auto'){
+            if(this.list().length > 0){
 
-        if(this.state.tabsSize != this.list().length * 40){
-            this.setState({
-                tabsSize: this.list().length * 40
-            });
-            ActionMenu.tabsSize(this.list().length * 40);
-            return false;
+                return false;
+            }else{
+                ActionMenu.tabsSize(this.list().length * 40);
+                return true;
+            }
         }else{
+            ActionMenu.tabsSize(this.list().length * 40);
             return true;
-        };
+        }
     }
 
     render() {
@@ -98,6 +92,7 @@ class List extends React.Component{
                 height: window.innerHeight - 93
             };
         }
+
         return (
             <ul id="nav-accordion" className="nav navbar-var" style={height}>
                 {this.list()}
@@ -108,7 +103,9 @@ class List extends React.Component{
 
 List.propTypes = {
     data: React.PropTypes.object.isRequired,
+    height: React.PropTypes.node.isRequired,
     tabScrollPosition: React.PropTypes.object.isRequired
 };
 
 module.exports = List;
+
