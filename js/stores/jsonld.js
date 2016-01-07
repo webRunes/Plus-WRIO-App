@@ -1,9 +1,7 @@
 var Reflux = require('reflux'),
     host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
-    CrossStorageClient = require('cross-storage')
-    .CrossStorageClient,
-    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise')
-    .Promise,
+    CrossStorageClient = require('cross-storage').CrossStorageClient,
+    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
     storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
         promise: Promise
     }),
