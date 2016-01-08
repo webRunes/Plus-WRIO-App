@@ -265,5 +265,49 @@ module.exports = Reflux.createStore({
                 }
             }.bind(this), 100);
         }
-    }
+    },
+
+
+    hideAlertWarning(id, cb){
+        var info = id + ' close warning alert';
+        storage.onConnect().then(function () {
+            return storage.get(info);
+        }).then(function (res) {
+            if(res){
+                cb(true);
+            }else{
+                cb(false);
+            }
+        });
+    },
+
+    hideAlertWelcome(id, cb){
+        var info = id + ' close welcome alert';
+        storage.onConnect().then(function () {
+            return storage.get(info);
+        }).then(function (res) {
+            if(res){
+                cb(true);
+            }else{
+                cb(false);
+            }
+        });
+    },
+
+    hideAlertWarningByClick(id){
+        var info = id + ' close warning alert';
+        storage.onConnect().then(function () {
+            storage.set(info, true);
+        });
+    },
+
+    hideAlertWelcomeByClick(id){
+        var info = id + ' close welcome alert';
+        storage.onConnect().then(function () {
+            storage.set(info, true);
+        });
+    },
+
+
+
 });
