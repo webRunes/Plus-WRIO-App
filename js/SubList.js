@@ -54,7 +54,7 @@ class SubList extends React.Component{
             });
         return (
             <li className={className}>
-                <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
+                <a href={'//' + this.props.data.url} onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
                     <span className="qty pull-right">{rightContent}</span>
                     <span>{name}</span>
                 </a>
