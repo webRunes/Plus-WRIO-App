@@ -14,26 +14,28 @@ var Reflux = require('reflux'),
 
 module.exports = Reflux.createStore({
     listenables: Actions,
-    getUrl: function () {
+    getUrl: function() {
         var theme = 'Default-WRIO-Theme';
         return host + theme + '/widget/defaultList.htm';
     },
-    init: function () {
-        storage.onConnect().then(function () {
-            return storage.get('plus');
-        }).then(function (res) {
-            if (res) {
-                this.data = res;
-            } else {
-                getJsonldsByUrl(
-                    this.getUrl(),
-                    this.filterItemList.bind(this)
-                );
-            }
-        }.bind(this));
+    init: function() {
+        storage.onConnect()
+            .then(function() {
+                return storage.get('plus');
+            })
+            .then(function(res) {
+                if (res) {
+                    this.data = res;
+                } else {
+                    getJsonldsByUrl(
+                        this.getUrl(),
+                        this.filterItemList.bind(this)
+                    );
+                }
+            }.bind(this));
     },
     pending: 0,
-    onData: function (params) {
+    onData: function(params) {
         var o = params.tab,
             parentName = params.parent,
             key;
@@ -60,16 +62,18 @@ module.exports = Reflux.createStore({
         }
         this.pending -= 1;
         if (this.pending === 0) {
-            storage.onConnect().then(function () {
-                return storage.get('plus');
-            }).then(function (res) {
-                if (JSON.stringify(res) !== JSON.stringify(this.data)) {
-                    this.update();
-                }
-            }.bind(this));
+            storage.onConnect()
+                .then(function() {
+                    return storage.get('plus');
+                })
+                .then(function(res) {
+                    if (JSON.stringify(res) !== JSON.stringify(this.data)) {
+                        this.update();
+                    }
+                }.bind(this));
         }
     },
-    onDataActive: function (params) {
+    onDataActive: function(params) {
         var o = params.tab,
             parentName = params.parent,
             key;
@@ -106,17 +110,17 @@ module.exports = Reflux.createStore({
             }
         }
     },
-    update: function (cb) {
+    update: function(cb) {
         storage.onConnect()
-            .then(function () {
+            .then(function() {
                 storage.del('plus');
                 storage.set('plus', this.data);
             }.bind(this))
             .then(cb);
     },
-    merge: function () {
+    merge: function() {
         this.removeLastActive(this.data);
-        this.addCurrentPage(function (params) {
+        this.addCurrentPage(function(params) {
             if (params) {
                 this.onDataActive(params);
             }
@@ -124,18 +128,19 @@ module.exports = Reflux.createStore({
             this.trigger(this.data);
         });
     },
-    removeLastActive: function (obj) {
-        Object.keys(obj).forEach(function (key) {
-            var o = obj[key];
-            if (o.active !== undefined) {
-                delete o.active;
-            }
-            if (o.children) {
-                this.removeLastActive(o.children);
-            }
-        }, this);
+    removeLastActive: function(obj) {
+        Object.keys(obj)
+            .forEach(function(key) {
+                var o = obj[key];
+                if (o.active !== undefined) {
+                    delete o.active;
+                }
+                if (o.children) {
+                    this.removeLastActive(o.children);
+                }
+            }, this);
     },
-    addCurrentPage: function (cb) {
+    addCurrentPage: function(cb) {
         var scripts = document.getElementsByTagName('script'),
             i,
             json,
@@ -149,6 +154,15 @@ module.exports = Reflux.createStore({
                     json = undefined;
                     console.error('Your json-ld not valid: ' + exception);
                 }
+                if ((typeof json === 'object') && (json['@type'] === 'ItemList')) {
+                    o = {
+                        name: json.name,
+                        url: normURL(window.location.href),
+                        author: normURL(json.author),
+                        active: true
+                    };
+                }
+
                 if ((typeof json === 'object') && (json['@type'] === 'Article')) {
                     o = {
                         name: json.name,
@@ -162,7 +176,7 @@ module.exports = Reflux.createStore({
         }
         if (o) {
             if (o.author && !this.data[o.author]) {
-                getJsonldsByUrl('//' + o.author, function (jsons) {
+                getJsonldsByUrl('//' + o.author, function(jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -187,9 +201,9 @@ module.exports = Reflux.createStore({
             cb.call(this);
         }
     },
-    filterItemList: function (jsons) {
+    filterItemList: function(jsons) {
         var items = [];
-        jsons.forEach(function (json) {
+        jsons.forEach(function(json) {
             if ((json.itemListElement !== undefined) && (json['@type'] === 'ItemList')) {
                 items = items.concat(json.itemListElement);
             }
@@ -197,8 +211,8 @@ module.exports = Reflux.createStore({
         this.pending += items.length;
         this.core(items);
     },
-    core: function (items) {
-        items.forEach(function (o, order) {
+    core: function(items) {
+        items.forEach(function(o, order) {
             o = {
                 name: o.name,
                 url: normURL(o.url),
@@ -207,7 +221,7 @@ module.exports = Reflux.createStore({
             };
             var author = o.author;
             if (author) {
-                getJsonldsByUrl('//' + author, function (jsons) {
+                getJsonldsByUrl('//' + author, function(jsons) {
                     var j, name;
                     for (j = 0; j < jsons.length; j += 1) {
                         if (jsons[j]['@type'] === 'Article') {
@@ -227,10 +241,10 @@ module.exports = Reflux.createStore({
             }
         }, this);
     },
-    getInitialState: function () {
+    getInitialState: function() {
         return this.data;
     },
-    onDel: function (listName, elName) {
+    onDel: function(listName, elName) {
         var next;
         if (elName === undefined) {
             next = getNext(this.data, listName);
@@ -238,12 +252,13 @@ module.exports = Reflux.createStore({
         } else {
             next = getNext(this.data[listName], elName);
             delete this.data[listName].children[elName];
-            if (Object.keys(this.data[listName].children).length === 0) {
+            if (Object.keys(this.data[listName].children)
+                .length === 0) {
                 delete this.data[listName].children;
                 this.data[listName].active = true;
             }
         }
-        this.update(function () {
+        this.update(function() {
             if (next) {
                 window.location = '//' + next;
             } else {
@@ -251,14 +266,14 @@ module.exports = Reflux.createStore({
             }
         }.bind(this));
     },
-    haveData: function () {
+    haveData: function() {
         return ((this.data !== null) && (typeof this.data === 'object'));
     },
-    onRead: function () {
+    onRead: function() {
         if (this.haveData() && (this.pending === 0)) {
             this.merge();
         } else {
-            var i = setInterval(function () {
+            var i = setInterval(function() {
                 if (this.haveData() && (this.pending === 0)) {
                     clearInterval(i);
                     this.merge();
