@@ -1,4 +1,3 @@
-'use strict';
 var React = require('react'),
     Reflux = require('reflux'),
     StoreLd = require('./stores/jsonld'),

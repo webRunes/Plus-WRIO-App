@@ -1,4 +1,3 @@
-'use strict';
 var React = require('react'),
     actions = require('./actions/jsonld'),
     Item = require('./Item'),

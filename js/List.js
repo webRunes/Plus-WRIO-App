@@ -1,4 +1,3 @@
-'use strict';
 var React = require('react'),
     Reflux = require('reflux'),
     actions = require('./actions/jsonld'),
@@ -8,8 +7,8 @@ var React = require('react'),
     StoreMenu = require('./stores/menu'),
     ActionMenu = require('./actions/menu');
 
-class List extends React.Component{
-    constructor(props){
+class List extends React.Component {
+    constructor(props) {
         super(props);
 
         this.onToggleMenu = this.onToggleMenu.bind(this);
@@ -26,19 +25,19 @@ class List extends React.Component{
         ActionMenu.toggleMenu(false);
     }
 
-    onToggleMenu (data, fixed) {
+    onToggleMenu(data, fixed) {
         this.setState({
-            fixed:  (window.innerHeight < this.list().length * 40 + 93 && data) ? true : false
+            fixed: (window.innerHeight < this.list().length * 40 + 93 && data) ? true : false
         });
     }
 
-    onWindowResize (width, height) {
+    onWindowResize(width, height) {
         this.setState({
             resize: true
         });
     }
 
-    tabsSize (length) {
+    tabsSize(length) {
         this.setState({
             tabsSize: length
         });
@@ -58,7 +57,7 @@ class List extends React.Component{
             if (item.children) {
                 return <SubList data={item} key={item.url} />;
             }
-            del = function (){
+            del = function() {
                 actions.del(item.url);
             };
             return <Item className="panel" del={del} onClick={List.clickOnItem} tabScrollPosition={this.props.tabScrollPosition} data={item} listName={item.name} key={item.url} />;
@@ -72,15 +71,15 @@ class List extends React.Component{
     }
 
     shouldComponentUpdate(newProps) {
-        if(newProps.height != 'auto'){
-            if(this.list().length > 0){
+        if (newProps.height != 'auto') {
+            if (this.list().length > 0) {
 
                 return false;
-            }else{
+            } else {
                 ActionMenu.tabsSize(this.list().length * 40);
                 return true;
             }
-        }else{
+        } else {
             ActionMenu.tabsSize(this.list().length * 40);
             return true;
         }
@@ -91,7 +90,7 @@ class List extends React.Component{
             height: 'auto'
         };
 
-        if(window.innerWidth < 767 && (this.state.fixed == true || window.innerHeight - 93 < this.list().length * 40)){
+        if (window.innerWidth < 767 && (this.state.fixed == true || window.innerHeight - 93 < this.list().length * 40)) {
             height = {
                 height: window.innerHeight - 93
             };
@@ -112,4 +111,3 @@ List.propTypes = {
 };
 
 module.exports = List;
-
