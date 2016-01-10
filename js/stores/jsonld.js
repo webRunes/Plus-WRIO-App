@@ -25,10 +25,26 @@ module.exports = Reflux.createStore({
                 if (res) {
                     this.data = res;
                 } else {
-                    getJsonldsByUrl(
-                        this.getUrl(),
-                        this.filterItemList.bind(this)
-                    );
+                    storage.get('oldUser').then(function(res) {
+                        if (res) {
+                            getJsonldsByUrl(
+                                this.getUrl(),
+                                this.filterItemList.bind(this)
+                            );
+                        } else {
+                            storage.set('oldUser', true);
+                            this.addCurrentPage(function(params) {
+                                if (params) {
+                                    this.data = {};
+                                    var key = params.tab.url;
+                                    this.data[key] = params.tab;
+                                    this.data[key].order = lastOrder(this.data);
+                                    this.data.newUser = true;
+                                    this.trigger(this.data);
+                                }
+                            }.bind(this));
+                        }
+                    }.bind(this));
                 }
             }.bind(this));
     },
@@ -118,7 +134,7 @@ module.exports = Reflux.createStore({
     },
     merge: function() {
         this.removeLastActive(this.data);
-        this.addCurrentPage(function(params) {
+        this.addCurrentPage((params) => {
             if (params) {
                 this.onDataActive(params);
             }
@@ -265,7 +281,7 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
     haveData: function() {
-        return ((this.data !== null) && (typeof this.data === 'object'));
+        return ((this.data !== null) && (typeof this.data === 'object')) && (!this.data.newUser);
     },
     onRead: function() {
         if (this.haveData() && (this.pending === 0)) {

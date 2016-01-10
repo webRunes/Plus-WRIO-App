@@ -1,10 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 
-class Item extends React.Component{
-    constructor(props){
+class Item extends React.Component {
+    constructor(props) {
         super(props);
-        this.state = {active: props.data ? props.data.active : false};
+        this.state = {
+            active: props.data ? props.data.active : false
+        };
         this.gotoUrl = this.gotoUrl.bind(this);
     }
     gotoUrl() {
