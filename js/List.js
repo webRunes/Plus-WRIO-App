@@ -50,7 +50,7 @@ class List extends React.Component {
                 return this.props.data[name];
             }, this), 'order'
         ).filter((item) => {
-            if (typeof item === "object") {
+            if (typeof item === 'object') {
                 return item;
             }
         }).map((item, i) => {

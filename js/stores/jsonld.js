@@ -1,8 +1,8 @@
-import Reflux from 'reflux'
-import normURL from './normURL'
+import Reflux from 'reflux';
+import normURL from './normURL';
 import Actions from '../actions/jsonld';
-import {getJsonldsByUrl,lastOrder,getNext} from './tools'
-import {Promise} from 'es6-promise'
+import {getJsonldsByUrl,lastOrder,getNext} from './tools';
+import {Promise} from 'es6-promise';
 
 var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'https://wrioos.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
