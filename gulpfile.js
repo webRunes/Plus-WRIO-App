@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
+var _browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var fs = require('fs');
 var wrapper = require('gulp-wrapper');
@@ -7,6 +8,7 @@ var uglify = require ('gulp-uglify');
 var rename = require("gulp-rename");
 var babelify = require('babelify');
 var eslint = require('gulp-eslint');
+var buffer = require('vinyl-buffer');
 
 console.log(uglify);
 
@@ -25,6 +27,24 @@ gulp.task('lint', function () {
         // To have the process exit with an error code (1) on
         // lint error, return the stream and pipe to failAfterError last.
         .pipe(eslint.failAfterError());
+});
+
+gulp.task('test-bundle',function() {
+
+    return _browserify({
+        entries: 'test/index.js',
+        debug: true
+    })
+        .transform(babelify)
+        .bundle()
+        .on('error', function(err) {
+            console.log('Babel client:', err.toString());
+        })
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest('./test'))
+
+
 });
 
 gulp.task('storage-hub', function() {
@@ -46,6 +66,6 @@ gulp.task('storage-hub', function() {
 });
 
 
-gulp.task('default', ['lint','storage-hub']);
+gulp.task('default', ['lint','test-bundle','storage-hub']);
 // .pipe(uglify())
 //echo '<script>' > widget/storageHub.htm; browserify -g uglifyify js/hub.js >> widget/storageHub.htm; echo '</script>' >> widget/storageHub.htm
