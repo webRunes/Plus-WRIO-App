@@ -47,10 +47,14 @@ class List extends React.Component{
     list() {
         var del;
         return sortBy(
-            Object.keys(this.props.data).map(function (name) {
+            Object.keys(this.props.data).map((name) => {
                 return this.props.data[name];
             }, this), 'order'
-        ).map(function (item, i) {
+        ).filter((item) => {
+            if (typeof item === "object") {
+                return item;
+            }
+        }).map((item, i) => {
             if (item.children) {
                 return <SubList data={item} key={item.url} />;
             }
