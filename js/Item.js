@@ -1,6 +1,5 @@
-'use strict';
-var React = require('react'),
-    classNames = require('classnames');
+import React from 'react';
+import classNames from 'classnames';
 
 class Item extends React.Component{
     constructor(props){

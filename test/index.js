@@ -3,5 +3,5 @@ var domready = require('domready'),
     Plus = require('../index');
 
 domready(function () {
-    React.render(<Plus />, document.body);
+    React.render(<Plus/>, document.body);
 });

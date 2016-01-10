@@ -1,4 +1,3 @@
-'use strict';
 var React = require('react'),
     Reflux = require('reflux'),
     actions = require('./actions/jsonld'),

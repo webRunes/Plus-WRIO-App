@@ -17,8 +17,7 @@
   },
   "scripts": {
     "postinstall": "gulp",
-    "start": "npm run lint && npm run buildTest",
-    "lint": "eslint js",
+    "start": "npm run buildTest",
     "buildTest": "browserify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js",
     "watch": "watchify -p browserify-notify -t [envify --NODE_ENV development] -t reactify test/index.js -o test/bundle.js -d",
     "bumpVersion": "npm run version && npm run bundle",
@@ -60,9 +59,10 @@
     "babelify": "^6.3.0",
     "browserify-notify": "^1.1.2",
     "eslint": "^1.4.3",
-    "eslint-plugin-react": "^3.0.0",
-    "esprima-fb": "^15001.1.0-dev-harmony-fb",
-    "react-tools": "^0.13.3",
+    "eslint-plugin-react": "^3.1.0",
+    "eslint-plugin-ideal":"^0.1.2",
+    "gulp-eslint":"*",
+    "babel-eslint": "*",
     "uglifyify": "^3.0.1",
     "watchify": "^3.2.2"
   }

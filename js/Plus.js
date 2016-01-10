@@ -1,14 +1,13 @@
-'use strict';
-var React = require('react'),
-	Reflux = require('reflux'),
-	StoreLd = require('./stores/jsonld'),
-	actions = require('./actions/jsonld'),
-	ActionMenu = require('./actions/menu'),
-	StoreMenu = require('./stores/menu'),
-	classNames = require('classnames'),
-	List = require('./List'),
-	sortBy = require('lodash.sortby'),
-	P = require('./P');
+import React from 'react';
+import Reflux from 'reflux';
+import StoreLd from './stores/jsonld';
+import actions from './actions/jsonld';
+import ActionMenu from './actions/menu';
+import StoreMenu from './stores/menu';
+import classNames from 'classnames';
+import List from './List';
+import sortBy from 'lodash.sortby';
+import P from './P';
 
 class Plus extends React.Component {
 	constructor(props) {
