@@ -1,16 +1,14 @@
-var Reflux = require('reflux'),
-    host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'http://wrioos.com.s3-website-us-east-1.amazonaws.com/',
+import Reflux from 'reflux'
+import normURL from './normURL'
+import Actions from '../actions/jsonld';
+import {getJsonldsByUrl,lastOrder,getNext} from './tools'
+import {Promise} from 'es6-promise'
+
+var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'https://wrioos.com/',
     CrossStorageClient = require('cross-storage').CrossStorageClient,
-    Promise = (typeof Promise !== 'undefined') ? Promise : require('es6-promise').Promise,
     storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
         promise: Promise
-    }),
-    tools = require('./tools'),
-    getJsonldsByUrl = tools.getJsonldsByUrl,
-    lastOrder = tools.lastOrder,
-    getNext = tools.getNext,
-    normURL = require('./normURL'),
-    Actions = require('../actions/jsonld');
+    });
 
 module.exports = Reflux.createStore({
     listenables: Actions,
