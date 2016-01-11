@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 import classNames from 'classnames';
-import {getServiceUrl,getDomain} from './utils/servicelocator.js'
+import {getServiceUrl,getDomain} from './utils/servicelocator.js';
 
 var domain = getDomain();
 
