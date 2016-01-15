@@ -34,6 +34,7 @@ describe('jsonld store test', () => {
        store.init();
        setTimeout(() => {
            console.log("DATA:",store.data);
+           should(store.data).equal(mockval.plus);
            done();
        },1000);
 
