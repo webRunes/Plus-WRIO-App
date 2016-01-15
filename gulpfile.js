@@ -1,3 +1,5 @@
+require('babel/register');
+
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var _browserify = require('browserify');
@@ -9,8 +11,25 @@ var rename = require("gulp-rename");
 var babelify = require('babelify');
 var eslint = require('gulp-eslint');
 var buffer = require('vinyl-buffer');
+var mocha = require('gulp-mocha');
 
 console.log(uglify);
+
+gulp.task('test', function() {
+    return gulp.src('test/**/*.js', {read: false})
+        // gulp-mocha needs filepaths so you can't have any plugins before it
+        .pipe(mocha({
+            reporter: 'dot',
+            timeout: 20000
+        }))
+        .once('error', function(err) {
+            console.log(err);
+            process.exit(1);
+        })
+        .once('end', function () {
+            process.exit();
+        });;
+});
 
 gulp.task('lint', function () {
     // ESLint ignores files with "node_modules" paths.
@@ -29,7 +48,7 @@ gulp.task('lint', function () {
         .pipe(eslint.failAfterError());
 });
 
-gulp.task('test-bundle',function() {
+/*gulp.task('test-bundle',function() {
 
     return _browserify({
         entries: 'test/index.js',
@@ -46,7 +65,7 @@ gulp.task('test-bundle',function() {
 
 
 });
-
+*/
 gulp.task('storage-hub', function() {
 
     gulp.src('js/hub.js')
@@ -66,6 +85,6 @@ gulp.task('storage-hub', function() {
 });
 
 
-gulp.task('default', ['lint','test-bundle','storage-hub']);
+gulp.task('default', ['lint', 'storage-hub']);
 // .pipe(uglify())
 //echo '<script>' > widget/storageHub.htm; browserify -g uglifyify js/hub.js >> widget/storageHub.htm; echo '</script>' >> widget/storageHub.htm
