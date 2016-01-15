@@ -28,7 +28,7 @@ var mockval = {
 describe('jsonld store test', () => {
     before(() => {});
 
-    it("Shoud create jsonld store", (done) => {
+    it("Should create jsonld store", (done) => {
        var store = JsonLDStore;
        setMock(mockval);
        store.init();
