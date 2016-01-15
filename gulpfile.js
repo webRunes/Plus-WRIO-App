@@ -1,3 +1,5 @@
+require('babel/register');
+
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var _browserify = require('browserify');
@@ -9,8 +11,24 @@ var rename = require("gulp-rename");
 var babelify = require('babelify');
 var eslint = require('gulp-eslint');
 var buffer = require('vinyl-buffer');
+var mocha = require('gulp-mocha');
 
 console.log(uglify);
+
+gulp.task('test', function() {
+    return gulp.src('test/**/*.js', {read: false})
+        // gulp-mocha needs filepaths so you can't have any plugins before it
+        .pipe(mocha({
+            reporter: 'dot',
+            timeout: 20000
+        }))
+        .once('error', function () {
+            process.exit(1);
+        })
+        .once('end', function () {
+            process.exit();
+        });;
+});
 
 gulp.task('lint', function () {
     // ESLint ignores files with "node_modules" paths.

@@ -2,6 +2,7 @@ var express = require('express');
 var app = require("./wrio_app.js")
 	.init(express);
 
+app.ready = () => {};
 var nconf = require('./wrio_nconf.js');
 
 var passport = require('passport');
@@ -28,6 +29,8 @@ var server = require('http')
 	.createServer(app)
 	.listen(nconf.get("server:port"), function(err, res) {
 		console.log("app running on port " + nconf.get("server:port"));
+		server_setup();
+		app.ready();
 	});
 
 passport.serializeUser(function(user, done) {
@@ -49,41 +52,49 @@ passport.deserializeUser(function(obj, done) {
 //		});
 //	}
 //));
+var server_setup(() => {
+	app.use(session({
+		secret: 'keyboard cat',
+		saveUninitialized: true,
+		resave: true,
+		key: 'sid'
+	}));
 
-app.get('/', function(request, response) {
-	response.sendFile(__dirname +
-		'/hub/index.htm');
-});
-
-app.get('/account', ensureAuthenticated, function(request, response) {
-	response.render('account', {
-		user: request.user
+	app.get('/', function(request, response) {
+		response.sendFile(__dirname +
+			'/hub/index.htm');
 	});
-});
 
-app.get('/auth/google', passport.authenticate('google', {
-	scope: ['https://www.googleapis.com/auth/userinfo.profile',
-		'https://www.googleapis.com/auth/userinfo.email'
-	]
-}));
+	app.get('/account', ensureAuthenticated, function(request, response) {
+		response.render('account', {
+			user: request.user
+		});
+	});
 
-app.get('/auth/google/callback',
-	passport.authenticate('google', {
-		successRedirect: '/',
-		failureRedirect: '/login'
-	}),
-	function(request, response) {
+	app.get('/auth/google', passport.authenticate('google', {
+		scope: ['https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email'
+		]
+	}));
+
+	app.get('/auth/google/callback',
+		passport.authenticate('google', {
+			successRedirect: '/',
+			failureRedirect: '/login'
+		}),
+		function(request, response) {
+			response.redirect('/');
+		});
+
+	app.get('/logout', function(request, response) {
+		request.logout();
 		response.redirect('/');
 	});
 
-app.get('/logout', function(request, response) {
-	request.logout();
-	response.redirect('/');
-});
-
-function ensureAuthenticated(request, response, next) {
-	if (request.isAuthenticated()) {
-		return next();
+	function ensureAuthenticated(request, response, next) {
+		if (request.isAuthenticated()) {
+			return next();
+		}
+		response.redirect('/login')
 	}
-	response.redirect('/login')
-}
+});
