@@ -28,11 +28,15 @@ var mockval = {
 describe('jsonld store test', () => {
     before(() => {});
 
-    it("Shoud create jsonld store", () => {
+    it("Shoud create jsonld store", (done) => {
        var store = JsonLDStore;
        setMock(mockval);
        store.init();
-       console.log("DATA:",store.data);
+       setTimeout(() => {
+           console.log("DATA:",store.data);
+           done();
+       },1000);
+
     });
 });
 
