@@ -48,7 +48,7 @@ gulp.task('lint', function () {
         .pipe(eslint.failAfterError());
 });
 
-gulp.task('test-bundle',function() {
+/*gulp.task('test-bundle',function() {
 
     return _browserify({
         entries: 'test/index.js',
@@ -65,7 +65,7 @@ gulp.task('test-bundle',function() {
 
 
 });
-
+*/
 gulp.task('storage-hub', function() {
 
     gulp.src('js/hub.js')
@@ -85,6 +85,6 @@ gulp.task('storage-hub', function() {
 });
 
 
-gulp.task('default', ['lint','test-bundle','storage-hub']);
+gulp.task('default', ['lint', 'storage-hub']);
 // .pipe(uglify())
 //echo '<script>' > widget/storageHub.htm; browserify -g uglifyify js/hub.js >> widget/storageHub.htm; echo '</script>' >> widget/storageHub.htm
