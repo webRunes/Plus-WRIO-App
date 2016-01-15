@@ -2,6 +2,7 @@ import assert from 'assert';
 import should from 'should';
 import {setMock} from '../js/stores/CrossStorageFactory.js'
 import JsonLDStore from '../js/stores/jsonld.js'
+import jsdom from 'jsdom';
 
 var mockval = {
     "plus":{
@@ -25,10 +26,33 @@ var mockval = {
     }
 };
 
+
+
+var FAKE_DOM_HTML = `
+<html>
+<body>
+</body>
+</html>
+`;
+
+function setupFakeDOM() {
+    if (typeof document !== 'undefined') {
+        return;
+    }
+
+    global.document = jsdom.jsdom(FAKE_DOM_HTML);
+    global.window = document.defaultView;
+    global.navigator = window.navigator;
+}
+
+setupFakeDOM();
+
+
+
 describe('jsonld store test', () => {
     before(() => {});
 
-    it("Should create jsonld store", (done) => {
+    it("Should create jsonld store, and get plus from crossStorage", (done) => {
        var store = JsonLDStore;
        setMock(mockval);
        store.init();
