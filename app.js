@@ -52,7 +52,7 @@ passport.deserializeUser(function(obj, done) {
 //		});
 //	}
 //));
-var server_setup(() => {
+var server_setup = () => {
 	app.use(session({
 		secret: 'keyboard cat',
 		saveUninitialized: true,
@@ -97,4 +97,6 @@ var server_setup(() => {
 		}
 		response.redirect('/login')
 	}
-});
+};
+
+module.exports = app;
