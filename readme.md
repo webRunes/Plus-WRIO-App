@@ -4,6 +4,6 @@
 (coming soon)
 
 ##Official Hub
-[wrioos.com/Plus-WRIO-App/](https://wrioos.com/Plus-WRIO-App/)
+[plus.wrioos.com/](https://plus.wrioos.com/)
 
 Powered by [Open Copyright](https://opencopyright.wrioos.com)
