@@ -34,7 +34,7 @@
     "gulp-wrapper": "^1.0.0",
     "lodash.sortby": "^3.1.4",
     "lodash.some": "*",
-    "react": "^0.13.3",
+    "react": "^0.14.3",
     "reflux": "^0.2.7",
     "superagent": "^1.2.0",
     "vinyl-source-stream": "^1.1.0"
@@ -43,11 +43,14 @@
     "babel": "^5.8.23",
     "babelify": "^6.3.0",
     "browserify-notify": "^1.1.2",
+    "chai": "^2.1.2",
     "eslint": "^1.4.3",
     "eslint-plugin-react": "^3.1.0",
     "eslint-plugin-ideal": "^0.1.2",
+    "jsdom": "^3.0.2",
     "gulp-eslint": "*",
     "babel-eslint": "*",
+    "react-addons-test-utils": "^0.14.6",
     "uglifyify": "^3.0.1",
     "vinyl-buffer": "^1.0.0"
   }
