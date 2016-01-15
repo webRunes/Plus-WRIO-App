@@ -6,8 +6,14 @@ script: "/bin/date"
 node_js:
   - 0.10
 
-install : npm install
-script  : npm start
+install: 
+  - npm install
+  - npm install -g gulp
+
+script:
+  - gulp
+  - gulp test
+  - npm start
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$(git log -1 --format='%an')" == "Alexey Anshakov" ]; then npm run bumpVersion; fi
@@ -34,8 +40,3 @@ deploy:
 #    secret_access_key:
 #      secure: ZhVBTUdoEP7GJvcyXweUVPi6KSsGmhx58Y4OP01zR8XyJnhARu1Xxf5nmWM+IJjx1wveNLC0itxaCLWwj8ZB27DCHBnpbBVSZfs5ft+0vV3RplEfF39MJln+rWMkc+CPZR909aEE4dPurMDPjC3hNE66RF9DymK7GU0YNHSVO6A=
 #    app-id: 450f10a2-c4e1-43ea-94da-dd0333b98757
-    on:
-      branch: production
-    
-
-  
