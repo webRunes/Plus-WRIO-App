@@ -11,6 +11,7 @@ install:
   - npm install -g gulp
 
 script:
+  - cp config.json.travis config.json
   - gulp
   - gulp test
   - npm start

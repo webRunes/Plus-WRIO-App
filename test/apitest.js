@@ -1,7 +1,7 @@
 import request from 'supertest';
 import assert from 'assert';
 import should from 'should';
-import app from '../app.js';
+import app from '../app/index.js';
 
 var ready = false;
 app.ready = () => {

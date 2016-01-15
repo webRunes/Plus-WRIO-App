@@ -16,14 +16,13 @@ var mocha = require('gulp-mocha');
 console.log(uglify);
 
 gulp.task('test', function() {
-    return gulp.src('test/**/apitest.js', {read: false})
+    return gulp.src('test/**/*.js', {read: false})
         // gulp-mocha needs filepaths so you can't have any plugins before it
         .pipe(mocha({
             reporter: 'dot',
             timeout: 20000
         }))
-        .once('error', function(err) {
-            console.log('Tests failed for reason:',err);
+        .once('error', function () {
             process.exit(1);
         })
         .once('end', function () {
