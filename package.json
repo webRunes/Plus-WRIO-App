@@ -49,6 +49,10 @@
     "gulp-eslint": "*",
     "babel-eslint": "*",
     "uglifyify": "^3.0.1",
-    "vinyl-buffer": "^1.0.0"
+    "vinyl-buffer": "^1.0.0",
+    "gulp-mocha": "^2.2.0",
+    "mocha": "^2.3.4",
+    "should": "^6.0.3",
+    "supertest": "^1.0.1"
   }
 }

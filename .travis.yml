@@ -6,8 +6,14 @@ script: "/bin/date"
 node_js:
   - 0.10
 
-install : npm install
-script  : npm start
+install: 
+  - npm install
+  - npm install -g gulp
+
+script:
+  - gulp
+  - gulp test
+  - npm start
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$(git log -1 --format='%an')" == "Alexey Anshakov" ]; then npm run bumpVersion; fi
