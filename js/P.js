@@ -60,7 +60,7 @@ class P extends React.Component{
 
 P.propTypes = {
     data: React.PropTypes.object.isRequired,
-    active: React.PropTypes.object.isRequired
+    active: React.PropTypes.bool.isRequired
 };
 
 export default P;

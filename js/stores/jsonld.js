@@ -33,7 +33,7 @@ module.exports = Reflux.createStore({
                             );
                         } else {
                             storage.set('oldUser', true);
-                            this.addCurrentPage(function(params) {
+                            this.addCurrentPage((params) => {
                                 if (params) {
                                     this.data = {};
                                     var key = params.tab.url;
@@ -42,7 +42,7 @@ module.exports = Reflux.createStore({
                                     this.data.newUser = true;
                                     this.trigger(this.data);
                                 }
-                            }.bind(this));
+                            });
                         }
                     }.bind(this));
                 }

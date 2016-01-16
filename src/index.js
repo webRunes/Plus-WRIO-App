@@ -9,7 +9,6 @@ var GooglePlusStrategy = require('passport-google-oauth')
 	.OAuth2Strategy;
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
-var nconf = require("./wrio_nconf.js");
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -87,3 +86,5 @@ function ensureAuthenticated(request, response, next) {
 	}
 	response.redirect('/login')
 }
+
+module.exports = app;

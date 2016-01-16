@@ -2,11 +2,13 @@ require('babel/register');
 
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
+var babel = require('gulp-babel');
 var _browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var fs = require('fs');
 var wrapper = require('gulp-wrapper');
 var uglify = require ('gulp-uglify');
+var nodemon = require('gulp-nodemon');
 var rename = require("gulp-rename");
 var babelify = require('babelify');
 var eslint = require('gulp-eslint');
@@ -14,6 +16,16 @@ var buffer = require('vinyl-buffer');
 var mocha = require('gulp-mocha');
 
 console.log(uglify);
+
+function restart_nodemon () {
+    if (nodemon_instance) {
+        console.log("Restarting nodemon");
+        nodemon_instance.emit('restart');
+    } else {
+        console.log("Nodemon isntance not ready yet")
+    }
+
+}
 
 gulp.task('test', function() {
     return gulp.src('test/**/*.js', {read: false})
@@ -66,6 +78,27 @@ gulp.task('lint', function () {
 
 });
 */
+
+gulp.task('babel-server', function() {
+    gulp.src('src/*.js')
+        .pipe(babel())
+        .on('error', function(err) {
+            console.log('Babel server:', err.toString());
+        })
+        .pipe(gulp.dest('app'))
+        .on('end',function() {
+            restart_nodemon();
+        });
+});
+
+gulp.task('views', function() {
+    gulp.src('src/views/**/*.*')
+        .pipe(gulp.dest('app/views'));
+
+    gulp.src('hub/index.htm')
+        .pipe(gulp.dest('app/hub'));
+});
+
 gulp.task('storage-hub', function() {
 
     gulp.src('js/hub.js')
@@ -84,7 +117,28 @@ gulp.task('storage-hub', function() {
         })
 });
 
+var nodemon_instance;
 
-gulp.task('default', ['lint', 'storage-hub']);
+gulp.task('nodemon', function() {
+    if (!nodemon_instance) {
+        nodemon_instance = nodemon({
+            script: 'server.js',
+            watch: 'src/__manual_watch__',
+            ext: '__manual_watch__',
+            verbose: false,
+        }).on('restart', function() {
+            console.log('~~~ restart server ~~~');
+        });
+    } else {
+        nodemon_instance.emit('restart');
+    }
+});
+
+gulp.task('default', ['babel-server', 'views', 'lint', 'storage-hub']);
+
+gulp.task('watch', ['default', 'nodemon'], function() {
+    gulp.watch(['src/index.js'], ['babel-server']);
+    gulp.watch('src/views/**/*.*', ['views']);
+});
 // .pipe(uglify())
 //echo '<script>' > widget/storageHub.htm; browserify -g uglifyify js/hub.js >> widget/storageHub.htm; echo '</script>' >> widget/storageHub.htm
