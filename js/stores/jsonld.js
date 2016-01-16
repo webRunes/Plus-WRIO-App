@@ -3,7 +3,7 @@ import normURL from './normURL';
 import Actions from '../actions/jsonld';
 import {getJsonldsByUrl,lastOrder,getNext} from './tools';
 import {Promise} from 'es6-promise';
-import {CrossStorageFactory} from './CrossStorageFactory.js'
+import {CrossStorageFactory} from './CrossStorageFactory.js';
 
 var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'https://wrioos.com/',
     storage = new CrossStorageFactory().getCrossStorage();

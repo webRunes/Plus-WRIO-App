@@ -49,6 +49,7 @@ export class CrossStorageFactory {
             console.log("Mocking crossStorage");
             return new CrossStorageMock();
         } else {
+            var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'https://wrioos.com/';
             return  new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
                 promise: Promise
             });
