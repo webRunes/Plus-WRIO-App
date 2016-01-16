@@ -14,7 +14,7 @@ class Item extends React.Component {
             localStorage.setItem('tabScrollPosition', document.getElementById('tabScrollPosition').scrollTop);
         }
 
-        window.location = '//' + this.props.data.url;
+        window.location =  this.props.data.url;
     }
     render() {
         var className = classNames({
@@ -28,7 +28,7 @@ class Item extends React.Component {
                 <a onClick={this.props.del} className="pull-right">
                     <span className="glyphicon glyphicon-remove" />
                 </a>
-                <a href={'//' + this.props.data.url} ref="tab" onClick={this.gotoUrl}>{name}</a>
+                <a href={this.props.data.url} ref="tab" onClick={this.gotoUrl}>{name}</a>
             </li>
         );
     }
