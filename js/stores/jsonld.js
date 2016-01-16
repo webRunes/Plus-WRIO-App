@@ -3,14 +3,12 @@ import normURL from './normURL';
 import Actions from '../actions/jsonld';
 import {getJsonldsByUrl,lastOrder,getNext} from './tools';
 import {Promise} from 'es6-promise';
+import {CrossStorageFactory} from './CrossStorageFactory.js';
 
 var host = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/' : 'https://wrioos.com/',
-    CrossStorageClient = require('cross-storage').CrossStorageClient,
-    storage = new CrossStorageClient(host + 'Plus-WRIO-App/widget/storageHub.htm', {
-        promise: Promise
-    });
+    storage = new CrossStorageFactory().getCrossStorage();
 
-module.exports = Reflux.createStore({
+export default Reflux.createStore({
     listenables: Actions,
     getUrl: function() {
         var theme = 'Default-WRIO-Theme';
@@ -18,35 +16,36 @@ module.exports = Reflux.createStore({
     },
     init: function() {
         storage.onConnect()
-            .then(function() {
+            .then(() =>{
                 return storage.get('plus');
             })
-            .then(function(res) {
-                if (res) {
-                    this.data = res;
+            .then((plusSites) => {
+                if (plusSites) {
+                    this.data = plusSites;
+                    return;
                 } else {
-                    storage.get('oldUser').then(function(res) {
-                        if (res) {
-                            getJsonldsByUrl(
-                                this.getUrl(),
-                                this.filterItemList.bind(this)
-                            );
-                        } else {
-                            storage.set('oldUser', true);
-                            this.addCurrentPage((params) => {
-                                if (params) {
-                                    this.data = {};
-                                    var key = params.tab.url;
-                                    this.data[key] = params.tab;
-                                    this.data[key].order = lastOrder(this.data);
-                                    this.data.newUser = true;
-                                    this.trigger(this.data);
-                                }
-                            });
-                        }
-                    }.bind(this));
+                    return storage.get('oldUser');
                 }
-            }.bind(this));
+            }).then((oldUser) => {
+                if (oldUser) {
+                    getJsonldsByUrl(
+                        this.getUrl(),
+                        this.filterItemList.bind(this)
+                    );
+                } else {
+                    storage.set('oldUser', true);
+                    this.addCurrentPage((params) => {
+                        if (params) {
+                            this.data = {};
+                            var key = params.tab.url;
+                            this.data[key] = params.tab;
+                            this.data[key].order = lastOrder(this.data);
+                            this.data.newUser = true;
+                            this.trigger(this.data);
+                        }
+                    });
+                }
+            });
     },
     pending: 0,
     onData: function(params) {
