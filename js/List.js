@@ -60,7 +60,7 @@ class List extends React.Component {
             del = function() {
                 actions.del(item.url);
             };
-            return <Item className="panel" del={del} onClick={List.clickOnItem} tabScrollPosition={this.props.tabScrollPosition} data={item} listName={item.name} key={item.url} />;
+            return <Item className="panel" del={del} onClick={List.clickOnItem} data={item} listName={item.name} key={item.url} />;
         }, this);
     }
 
@@ -106,8 +106,7 @@ class List extends React.Component {
 
 List.propTypes = {
     data: React.PropTypes.object.isRequired,
-    height: React.PropTypes.node.isRequired,
-    tabScrollPosition: React.PropTypes.object.isRequired
+    height: React.PropTypes.node.isRequired
 };
 
 module.exports = List;
