@@ -1,37 +1,36 @@
-'use strict';
-var React = require('react'),
-    Reflux = require('reflux'),
-    StoreLd = require('./stores/jsonld'),
-    actions = require('./actions/jsonld'),
-    ActionMenu = require('./actions/menu'),
-    StoreMenu = require('./stores/menu'),
-    classNames = require('classnames'),
-    List = require('./List'),
-    sortBy = require('lodash.sortby'),
-    P = require('./P');
+import React from 'react';
+import Reflux from 'reflux';
+import StoreLd from './stores/jsonld';
+import actions from './actions/jsonld';
+import ActionMenu from './actions/menu';
+import StoreMenu from './stores/menu';
+import classNames from 'classnames';
+import List from './List';
+import sortBy from 'lodash.sortby';
+import P from './P';
 
-class Plus extends React.Component{
-    constructor (props) {
+class Plus extends React.Component {
+    constructor(props) {
         super(props);
         this.onStateChange = this.onStateChange.bind(this);
         this.onToggleMenu = this.onToggleMenu.bind(this);
         this.state = {
             active: false,
             jsonld: {},
-            fixed:  false
+            fixed: false
         };
     }
 
-    onStateChange (jsonld) {
+    onStateChange(jsonld) {
         this.setState({
             jsonld: jsonld
         });
     }
 
-    onToggleMenu (data, fixed) {
+    onToggleMenu(data, fixed) {
         this.setState({
             active: data,
-            fixed:  fixed
+            fixed: fixed
         });
     }
 
@@ -42,31 +41,36 @@ class Plus extends React.Component{
     }
 
     componentDidUpdate() {
-        document.getElementById('tabScrollPosition').scrollTop = Plus.checkActiveHeight(this.state.jsonld);
+        document.getElementById('tabScrollPosition')
+            .scrollTop = Plus.checkActiveHeight(this.state.jsonld);
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.listenStoreLd();
     }
 
     static checkActiveHeight(data) {
-        if(Object.keys(data).length > 0){
-            return (Object.keys(data).map(function(name, i){
-                  return (data[name].active == true)? i : null;
-              }, this).filter(Number)[0] + 1) * 40;
-        }else{
+        if (Object.keys(data)
+            .length > 0) {
+            return (Object.keys(data)
+                .map(function(name, i) {
+                    return (data[name].active == true) ? i : null;
+                }, this)
+                .filter(Number)[0] + 1) * 40;
+        } else {
             return 0;
         }
     }
 
     static checkActive(data) {
-        if(data){
-            var top = Object.keys(data).filter(function(name){
-                return data[name].active == true;
-            }, this);
+        if (data) {
+            var top = Object.keys(data)
+                .filter(function(name) {
+                    return data[name].active == true;
+                }, this);
 
             return !(top.length == 1);
-        }else{
+        } else {
             return false;
         }
     }
@@ -76,12 +80,13 @@ class Plus extends React.Component{
             return null;
         }
         var className = classNames({
-            'navbar-collapse in unselectable': true,
-            'active': this.state.active,
-            'fixed': this.state.fixed
-        }), height = {
-            height: this.props.height
-        };
+                'navbar-collapse in unselectable': true,
+                'active': this.state.active,
+                'fixed': this.state.fixed
+            }),
+            height = {
+                height: this.props.height
+            };
         var activePlus = Plus.checkActive(this.state.jsonld);
 
         return (

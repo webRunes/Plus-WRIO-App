@@ -1,10 +1,9 @@
-'use strict';
-var React = require('react'),
-    actions = require('./actions/jsonld'),
-    Item = require('./Item'),
-    classNames = require('classnames'),
-    sortBy = require('lodash.sortby'),
-    some = require('lodash.some');
+import React from 'react';
+import actions from './actions/jsonld';
+import Item from './Item';
+import classNames from 'classnames';
+import sortBy from 'lodash.sortby';
+import some from 'lodash.some';
 
 class SubList extends React.Component{
     constructor(props){
@@ -54,7 +53,7 @@ class SubList extends React.Component{
             });
         return (
             <li className={className}>
-                <a onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
+                <a href={'//' + this.props.data.url} onClick={this.gotoUrl} className="collapsed" data-parent="#nav-accordion" data-toggle="collapse">
                     <span className="qty pull-right">{rightContent}</span>
                     <span>{name}</span>
                 </a>
