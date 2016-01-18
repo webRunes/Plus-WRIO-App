@@ -28,7 +28,7 @@ var cutLastSlash = function (url) {
 module.exports = function (url) {
     if ((typeof url === 'string') && (url.length > 0)) {
         [
-            //cutZone,
+            cutZone,
             cutTail,
             cutIndex,
             cutLastSlash
