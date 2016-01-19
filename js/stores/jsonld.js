@@ -20,7 +20,6 @@ export default Reflux.createStore({
                 return storage.get('plus');
             })
             .then((plus) => {
-                console.log('plus', plus);
                 if (plus) {
                     this.data = plus;
                     return storage.get('newUser');
@@ -30,7 +29,6 @@ export default Reflux.createStore({
                     this.trigger(this.data);
                 }
             }).then((newUser) => {
-                console.log('new user', newUser);
                 if (newUser) {
                     storage.del('newUser');
                     getJsonldsByUrl(
@@ -268,7 +266,7 @@ export default Reflux.createStore({
         }
         this.update(function() {
             if (next) {
-                window.location = '//' + next; 
+                window.location = '//' + next;
             } else {
                 this.trigger(this.data);
             }
