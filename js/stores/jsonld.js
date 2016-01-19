@@ -19,31 +19,24 @@ export default Reflux.createStore({
             .then(() =>{
                 return storage.get('plus');
             })
-            .then((plusSites) => {
-                if (plusSites) {
-                    this.data = plusSites;
-                    return;
+            .then((plus) => {
+                if (plus) {
+                    this.data = plus;
+                    return storage.get('newUser');
                 } else {
-                    return storage.get('oldUser');
+                    storage.set('newUser', true);
+                    this.data = {};
+                    this.trigger(this.data);
                 }
-            }).then((oldUser) => {
-                if (oldUser) {
+            }).then((newUser) => {
+                if (newUser) {
+                    storage.del('newUser');
                     getJsonldsByUrl(
                         this.getUrl(),
                         this.filterItemList.bind(this)
                     );
                 } else {
-                    storage.set('oldUser', true);
-                    this.addCurrentPage((params) => {
-                        if (params) {
-                            this.data = {};
-                            var key = params.tab.url;
-                            this.data[key] = params.tab;
-                            this.data[key].order = lastOrder(this.data);
-                            this.data.newUser = true;
-                            this.trigger(this.data);
-                        }
-                    });
+                    this.trigger(this.data);
                 }
             });
     },
@@ -280,7 +273,7 @@ export default Reflux.createStore({
         }.bind(this));
     },
     haveData: function() {
-        return ((this.data !== null) && (typeof this.data === 'object')) && (!this.data.newUser);
+        return ((this.data !== null) && (typeof this.data === 'object'));
     },
     onRead: function() {
         if (this.haveData() && (this.pending === 0)) {
