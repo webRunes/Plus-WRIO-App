@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "gulp && rm -fr node_modules",
-    "bumpVersion": "npm run version && npm run bundle",
+    "bumpVersion": "npm run version",
     "version": "sh version.sh",
     "bundle": "sh bundle.sh"
   },
