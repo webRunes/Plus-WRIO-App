@@ -110,7 +110,7 @@ gulp.task('storage-hub', function() {
             header: '<script>',
             footer: '</script>'
         }))
-        .pipe(rename('storageHub.htm'))
+        .pipe(rename('storageHub.html'))
         .pipe(gulp.dest('./widget/'))
         .on('error', function(err) {
             console.log('Build error:', err.toString());
