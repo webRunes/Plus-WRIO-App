@@ -180,6 +180,5 @@ UpgradeLog*.htm
 FakesAssemblies/
 config.json
 
-#Browserify bundles
-widget/storageHub.htm
+#Browserify bundles #widget/storageHub.htm - uncomment after https://github.com/webRunes/Plus-WRIO-App/issues/112
 test/bundle.js
