@@ -1,6 +1,6 @@
 {
   "name": "plus",
-  "version": "0.0.78",
+  "version": "0.0.79",
   "description": "(coming soon)",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     ]
   },
   "scripts": {
-    "start": "gulp && rm -fr node_modules",
+    "start": "echo ok",
     "bumpVersion": "npm run version",
     "version": "sh version.sh"
   },
