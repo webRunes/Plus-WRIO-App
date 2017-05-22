@@ -14,7 +14,7 @@
     ]
   },
   "scripts": {
-    "start": "echo ok",
+    "start": "rm -fR node_modules",
     "bumpVersion": "npm run version",
     "version": "sh version.sh"
   },
