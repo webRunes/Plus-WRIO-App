@@ -11,8 +11,6 @@ install:
   - npm install -g gulp
 
 script:
-  - gulp
-  - gulp test
   - npm start
 
 after_success:
